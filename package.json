@@ -9,10 +9,18 @@
     "lint": "next lint",
     "format:write": "prettier --write \"**/*.{ts,tsx,mdx}\" --cache",
     "format:check": "prettier --check \"**/*.{ts,tsx,mdx}\" --cache",
-    "prepare": "husky"
+    "prepare": "husky",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit push",
+    "db:push": "drizzle-kit push",
+    "db:local": "supabase start",
+    "db:local:stop": "supabase stop"
   },
   "dependencies": {
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.36.0",
     "next": "15.0.2",
+    "postgres": "^3.4.5",
     "react": "19.0.0-rc-02c0e824-20241028",
     "react-dom": "19.0.0-rc-02c0e824-20241028"
   },
@@ -25,6 +33,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "conventional-changelog-atom": "^5.0.0",
+    "drizzle-kit": "^0.27.2",
     "eslint": "^8",
     "eslint-config-next": "15.0.2",
     "husky": "^9.1.6",
