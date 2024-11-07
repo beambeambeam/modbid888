@@ -1,15 +1,22 @@
-import { config } from "dotenv"
-import { drizzle } from "drizzle-orm/postgres-js"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { env } from "~/env"
+import { drizzle, PostgresJsDatabase } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
 
-config({ path: ".env" })
+import * as schema from "./schema"
 
-// check if production or development if production use DATABASE_URL else use DATABASE_URL_DEV
-const DATABASE_URL =
-  process.env.NODE_ENV === "production"
-    ? process.env.DATABASE_URL
-    : process.env.DATABASE_URL_LOCAL
+let database: PostgresJsDatabase<typeof schema>
+let pg: ReturnType<typeof postgres>
 
-const client = postgres(DATABASE_URL!)
+if (env.NODE_ENV === "production") {
+  pg = postgres(env.DATABASE_URL)
+  database = drizzle(pg, { schema })
+} else {
+  if (!(global as any).database) {
+    pg = postgres(env.DATABASE_URL)
+    ;(global as any).database = drizzle(pg, { schema })
+  }
+  database = (global as any).database
+}
 
-export const db = drizzle({ client })
+export { database, pg }
