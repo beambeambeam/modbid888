@@ -68,7 +68,7 @@ export const userLogsRelations = relations(userLogs, ({ one }) => ({
 }))
 
 export const sessions = pgTable(
-  "session",
+  "sessions",
   {
     id: text("id").primaryKey(),
     userId: serial("userId")
