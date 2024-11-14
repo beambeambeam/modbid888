@@ -11,10 +11,11 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,mdx}\" --cache",
     "prepare": "husky",
     "db:push": "drizzle-kit push --config=drizzle.config.ts",
+    "db:migrate": "tsx ./src/db/migrate.ts",
     "db:generate": "drizzle-kit generate --config=drizzle.config.ts",
     "db:studio": "drizzle-kit studio",
     "db:clear": "tsx ./src/db/clear.ts",
-    "db:reset": "npm run db:clear",
+    "db:reset": "npm run db:clear && npm run db:migrate",
     "db:local": "supabase start",
     "db:local:stop": "supabase stop"
   },
