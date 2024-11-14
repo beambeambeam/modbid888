@@ -3,7 +3,9 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+import { useServerAction } from "zsa-react"
 
+import { signUpAction } from "~/app/(auth)/signup/actions"
 import { Button } from "~/components/ui/button"
 import {
   Form,
@@ -27,6 +29,8 @@ const registrationSchema = z
   })
 
 export default function SignUp() {
+  const { execute } = useServerAction(signUpAction)
+
   const form = useForm<z.infer<typeof registrationSchema>>({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
@@ -37,7 +41,7 @@ export default function SignUp() {
   })
 
   const onSubmit = (data: z.infer<typeof registrationSchema>) => {
-    console.log(data)
+    execute(data)
   }
 
   return (
