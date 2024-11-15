@@ -1,8 +1,11 @@
 import { eq } from "drizzle-orm"
 
+import { getAccountByUserId } from "~/data-access/accounts"
 import { database } from "~/db"
 import { userLogs, users } from "~/db/schema"
 import { UserId } from "~/use-cases/types"
+
+import { hashPassword } from "./utils"
 
 export async function deleteUser(userId: UserId) {
   await database.delete(users).where(eq(users.id, userId))
@@ -43,4 +46,29 @@ export async function addUserLogs(userId: UserId, action: string) {
     action,
     timestamp: new Date(),
   })
+}
+
+export async function verifyPassword(email: string, plainTextPassword: string) {
+  const user = await getUserByEmail(email)
+
+  if (!user) {
+    return false
+  }
+
+  const account = await getAccountByUserId(user.id)
+
+  if (!account) {
+    return false
+  }
+
+  const salt = account.salt
+  const savedPassword = account.password
+
+  if (!salt || !savedPassword) {
+    return false
+  }
+
+  const hash = await hashPassword(plainTextPassword, salt)
+
+  return hash === savedPassword
 }

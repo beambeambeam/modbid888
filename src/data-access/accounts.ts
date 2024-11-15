@@ -1,4 +1,5 @@
 import crypto from "crypto"
+import { eq } from "drizzle-orm"
 
 import { database } from "~/db"
 import { accounts } from "~/db/schema"
@@ -17,5 +18,12 @@ export async function createAccount(userId: UserId, password: string) {
       salt,
     })
     .returning()
+  return account
+}
+
+export async function getAccountByUserId(userId: UserId) {
+  const account = await database.query.accounts.findFirst({
+    where: eq(accounts.userId, userId),
+  })
   return account
 }
