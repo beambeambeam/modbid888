@@ -1,9 +1,9 @@
 import { relations } from "drizzle-orm"
 import {
   index,
-  numeric,
   pgEnum,
   pgTable,
+  real,
   serial,
   text,
   timestamp,
@@ -70,18 +70,18 @@ export const betLogs = pgTable("betlogs", {
   minigamesId: serial("minigames_id").references(() => minigames.id, {
     onDelete: "cascade",
   }),
-  betAmount: text("bet_amount").notNull(),
-  betResult: text("bet_result").notNull(),
-  profit: text("profit").notNull(),
-  multiplier: text("multiplier").notNull(),
+  betAmount: real("bet_amount").notNull(),
+  betResult: real("bet_result").notNull(),
+  profit: real("profit").notNull(),
+  multiplier: real("multiplier").notNull(),
 })
 
 export const minigames = pgTable("minigames", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description").notNull(),
-  winMultiplier: numeric("win_multiplier").notNull(),
-  lossMultiplier: numeric("loss_multiplier").notNull(),
+  winMultiplier: real("win_multiplier").notNull(),
+  lossMultiplier: real("loss_multiplier").notNull(),
 })
 
 export const sessions = pgTable(

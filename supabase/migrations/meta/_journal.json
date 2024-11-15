@@ -29,6 +29,27 @@
       "when": 1731602261602,
       "tag": "20241114163741_clumsy_pestilence",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1731658885535,
+      "tag": "20241115082125_lazy_overlord",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1731661283151,
+      "tag": "20241115090123_ancient_whizzer",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1731661475841,
+      "tag": "20241115090435_large_steel_serpent",
+      "breakpoints": true
     }
   ]
 }
