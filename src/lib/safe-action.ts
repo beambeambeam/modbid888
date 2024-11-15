@@ -2,6 +2,7 @@ import { createServerActionProcedure } from "zsa"
 
 import { env } from "~/env"
 import { rateLimitByKey } from "~/lib/limiter"
+import { assertAuthenticated } from "~/lib/session"
 import { PublicError } from "~/use-cases/errors"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,4 +33,16 @@ export const unauthenticatedAction = createServerActionProcedure()
       limit: 10,
       window: 10000,
     })
+  })
+
+export const authenticatedAction = createServerActionProcedure()
+  .experimental_shapeError(shapeErrors)
+  .handler(async () => {
+    const user = await assertAuthenticated()
+    await rateLimitByKey({
+      key: `${user.id}-global`,
+      limit: 10,
+      window: 10000,
+    })
+    return { user }
   })
