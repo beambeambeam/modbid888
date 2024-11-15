@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm"
 import {
   index,
+  numeric,
   pgEnum,
   pgTable,
   serial,
@@ -48,7 +49,7 @@ export const profiles = pgTable(
 )
 
 export const userLogs = pgTable(
-  "user_logs",
+  "userlogs",
   {
     id: serial("id").primaryKey(),
     userId: serial("user_id").references(() => users.id, {
@@ -60,12 +61,28 @@ export const userLogs = pgTable(
   (table) => [index("user_id_log_type_idx").on(table.userId)]
 )
 
-export const userLogsRelations = relations(userLogs, ({ one }) => ({
-  user: one(users, {
-    fields: [userLogs.userId],
-    references: [users.id],
+export const betLogs = pgTable("betlogs", {
+  id: serial("id").primaryKey(),
+  userId: serial("user_id").references(() => users.id, {
+    onDelete: "cascade",
   }),
-}))
+  timestamp: timestamp("timestamp").notNull(),
+  minigamesId: serial("minigames_id").references(() => minigames.id, {
+    onDelete: "cascade",
+  }),
+  betAmount: text("bet_amount").notNull(),
+  betResult: text("bet_result").notNull(),
+  profit: text("profit").notNull(),
+  multiplier: text("multiplier").notNull(),
+})
+
+export const minigames = pgTable("minigames", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  winMultiplier: numeric("win_multiplier").notNull(),
+  lossMultiplier: numeric("loss_multiplier").notNull(),
+})
 
 export const sessions = pgTable(
   "sessions",
@@ -82,6 +99,24 @@ export const sessions = pgTable(
   (table) => [index("sessions_user_id_idx").on(table.userId)]
 )
 
+export const userLogsRelations = relations(userLogs, ({ one }) => ({
+  user: one(users, {
+    fields: [userLogs.userId],
+    references: [users.id],
+  }),
+}))
+
+export const betLogsRelations = relations(betLogs, ({ one }) => ({
+  user: one(users, {
+    fields: [betLogs.userId],
+    references: [users.id],
+  }),
+  minigame: one(minigames, {
+    fields: [betLogs.minigamesId],
+    references: [minigames.id],
+  }),
+}))
+
 export type Users = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
 export type Accounts = typeof accounts.$inferSelect
@@ -91,3 +126,6 @@ export type NewProfile = typeof profiles.$inferInsert
 export type UserLogs = typeof userLogs.$inferSelect
 export type NewUserLog = typeof userLogs.$inferInsert
 export type Session = typeof sessions.$inferSelect
+export type NewSession = typeof sessions.$inferInsert
+export type BetLogs = typeof betLogs.$inferSelect
+export type NewBetLog = typeof betLogs.$inferInsert
