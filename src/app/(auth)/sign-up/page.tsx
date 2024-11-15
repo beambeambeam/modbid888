@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useServerAction } from "zsa-react"
 
-import { signUpAction } from "~/app/(auth)/signup/actions"
+import { signUpAction } from "~/app/(auth)/sign-up/actions"
 import { Button } from "~/components/ui/button"
 import {
   Form,
