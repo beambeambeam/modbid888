@@ -2,7 +2,7 @@
 
 import { useServerAction } from "zsa-react"
 
-import { signOutAction } from "./action"
+import { signOutAction } from "~/components/sign-out/action"
 
 export default function Logout() {
   const { execute } = useServerAction(signOutAction)

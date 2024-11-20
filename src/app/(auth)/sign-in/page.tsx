@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useServerAction } from "zsa-react"
 
+import { signInAction } from "~/app/(auth)/sign-in/actions"
 import { Button } from "~/components/ui/button"
 import {
   Form,
@@ -15,8 +16,6 @@ import {
   FormMessage,
 } from "~/components/ui/form"
 import { Input } from "~/components/ui/input"
-
-import { signInAction } from "./actions"
 
 const loginSchema = z.object({
   email: z.string().email(),
