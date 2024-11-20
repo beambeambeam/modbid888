@@ -87,6 +87,15 @@ export const minigames = pgTable("minigames", {
   lossMultiplier: real("loss_multiplier").notNull(),
 })
 
+export const minigameLogs = pgTable("minigamelogs", {
+  id: serial("id").primaryKey(),
+  minigameId: serial("minigame_id").references(() => minigames.id, {
+    onDelete: "cascade",
+  }),
+  timestamp: timestamp("timestamp").notNull(),
+  action: text("action").notNull(),
+})
+
 export const sessions = pgTable(
   "sessions",
   {
