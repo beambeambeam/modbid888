@@ -57,6 +57,9 @@ export const userLogs = pgTable(
     }),
     action: text("action").notNull(),
     timestamp: timestamp("timestamp").notNull(),
+    sessionId: serial("session_id").references(() => sessions.id, {
+      onDelete: "cascade",
+    }),
   },
   (table) => [index("user_id_log_type_idx").on(table.userId)]
 )
