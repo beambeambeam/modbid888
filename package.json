@@ -57,6 +57,7 @@
     "drizzle-kit": "^0.27.2",
     "eslint": "^8",
     "eslint-config-next": "15.0.2",
+    "eslint-config-react-app": "^7.0.1",
     "husky": "^9.1.7",
     "lint-staged": "^15.2.10",
     "postcss": "^8",
