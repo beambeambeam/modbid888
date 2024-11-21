@@ -44,4 +44,8 @@ const Configuration: UserConfig = {
   },
 }
 
+module.exports = {
+  extends: ["@commitlint/config-conventional"],
+}
+
 export default Configuration
