@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import localFont from "next/font/local"
 
-import Provider from "~/components/provider/app-provider"
+import Provider from "~/components/providers/app-provider"
 
 import "~/styles/globals.css"
 
