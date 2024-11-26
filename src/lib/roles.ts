@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation"
 
 import { getRoleByUserId } from "~/data-access/profiles"
-import { env } from "~/env"
 import { assertAuthenticated } from "~/lib/session"
 import { Role } from "~/use-cases/types"
 
@@ -32,9 +31,10 @@ export const byRoleAccess = async (allowRole: Role | Role[]) => {
 
 export const byRoleAccessRedirect = async (
   allowRole: Role | Role[],
-  redirectPath: string
+  redirectPath: string,
+  bypass?: boolean
 ) => {
-  if (env.NODE_ENV === "development") {
+  if (bypass) {
     return
   }
 
