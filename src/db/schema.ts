@@ -13,7 +13,7 @@ export const roleEnum = pgEnum("role", ["member", "admin"])
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
-  email: text("email").unique(),
+  email: text("email").unique().notNull(),
 })
 
 export const accounts = pgTable(
