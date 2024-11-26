@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from "~/components/ui/form"
 import { Input } from "~/components/ui/input"
+import { useToast } from "~/hooks/use-toast"
 
 const registrationSchema = z
   .object({
@@ -29,7 +30,22 @@ const registrationSchema = z
   })
 
 export default function SignUp() {
-  const { execute } = useServerAction(signUpAction)
+  const { toast } = useToast()
+  const { execute } = useServerAction(signUpAction, {
+    onError({ err }) {
+      toast({
+        title: "Something went wrong",
+        description: err.message,
+        variant: "destructive",
+      })
+    },
+    onSuccess() {
+      toast({
+        title: "Let's Go!",
+        description: "Enjoy your session",
+      })
+    },
+  })
 
   const form = useForm<z.infer<typeof registrationSchema>>({
     resolver: zodResolver(registrationSchema),
