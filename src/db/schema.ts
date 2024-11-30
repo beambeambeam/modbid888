@@ -41,6 +41,7 @@ export const profiles = pgTable(
       .unique(),
     displayName: text("display_name").notNull(),
     role: roleEnum("role").notNull().default("member"),
+    balance: real("balance"),
   },
   (table) => [
     index("user_id_profile_type_idx").on(table.userId),

@@ -15,6 +15,13 @@
       "when": 1732638516662,
       "tag": "20241126162836_furry_marvel_apes",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1732975702804,
+      "tag": "20241130140822_hot_guardsmen",
+      "breakpoints": true
     }
   ]
 }
