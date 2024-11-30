@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm"
 
 import { database } from "~/db"
 import { profiles, Profiles } from "~/db/schema"
-import { UserId } from "~/use-cases/types"
+import { UserId } from "~/types"
 
 export async function createProfile(userId: UserId, displayName: string) {
   const [profile] = await database

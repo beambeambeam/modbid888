@@ -1,11 +1,15 @@
 "use server"
 
+import { animals, colors, uniqueNamesGenerator } from "unique-names-generator"
 import { z } from "zod"
 
+import { createAccount } from "~/data-access/accounts"
+import { createProfile } from "~/data-access/profiles"
+import { createUser, getUserByEmail } from "~/data-access/users"
+import { PublicError } from "~/errors"
 import { rateLimitByIp } from "~/lib/limiter"
 import { unauthenticatedAction } from "~/lib/safe-action"
 import { setSession } from "~/lib/session"
-import { registerUserUseCase } from "~/use-cases/users"
 
 export const signUpAction = unauthenticatedAction
   .createServerAction()
@@ -20,3 +24,21 @@ export const signUpAction = unauthenticatedAction
     const user = await registerUserUseCase(input.email, input.password)
     await setSession(user.id)
   })
+
+export async function registerUserUseCase(email: string, password: string) {
+  const existingUser = await getUserByEmail(email)
+  if (existingUser) {
+    throw new PublicError("An user with that email already exists.")
+  }
+  const user = await createUser(email)
+  await createAccount(user.id, password)
+
+  const displayName = uniqueNamesGenerator({
+    dictionaries: [colors, animals],
+    separator: " ",
+    style: "capital",
+  })
+  await createProfile(user.id, displayName)
+
+  return { id: user.id }
+}

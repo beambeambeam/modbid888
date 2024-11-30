@@ -9,8 +9,8 @@ import { userChangeLogs } from "~/data-access/logs"
 import { getProfile, updateProfile } from "~/data-access/profiles"
 import { verifyPassword } from "~/data-access/users"
 import { createTransaction } from "~/data-access/utils"
+import { NotFoundError } from "~/errors"
 import { authenticatedAction } from "~/lib/safe-action"
-import { NotFoundError } from "~/use-cases/errors"
 
 export default authenticatedAction
   .createServerAction()

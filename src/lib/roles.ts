@@ -2,7 +2,7 @@ import { redirect } from "next/navigation"
 
 import { getRoleByUserId } from "~/data-access/profiles"
 import { assertAuthenticated } from "~/lib/session"
-import { Role } from "~/use-cases/types"
+import { Role } from "~/types"
 
 export const byRoleAccess = async (allowRole: Role | Role[]) => {
   try {

@@ -4,8 +4,8 @@ import { cache } from "react"
 import { cookies } from "next/headers"
 
 import { createSession, generateSessionToken, validateRequest } from "~/auth"
-import { AuthenticationError } from "~/use-cases/errors"
-import { UserId } from "~/use-cases/types"
+import { AuthenticationError } from "~/errors"
+import { UserId } from "~/types"
 
 const SESSION_COOKIE_NAME = "session"
 

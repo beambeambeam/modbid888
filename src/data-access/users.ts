@@ -4,7 +4,7 @@ import { getAccountByUserId } from "~/data-access/accounts"
 import { hashPassword } from "~/data-access/utils"
 import { database } from "~/db"
 import { userLogs, users } from "~/db/schema"
-import { UserId } from "~/use-cases/types"
+import { UserId } from "~/types"
 
 export async function deleteUser(userId: UserId) {
   await database.delete(users).where(eq(users.id, userId))
