@@ -8,7 +8,7 @@ import { eq } from "drizzle-orm"
 import { database } from "~/db"
 import { Session, sessions, Users, users } from "~/db/schema"
 import { getSessionToken } from "~/lib/session"
-import { UserId } from "~/use-cases/types"
+import { UserId } from "~/types"
 
 const SESSION_REFRESH_INTERVAL_MS = 1000 * 60 * 60 * 24 * 15
 const SESSION_MAX_DURATION_MS = SESSION_REFRESH_INTERVAL_MS * 2

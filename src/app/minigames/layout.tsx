@@ -5,7 +5,7 @@ export default async function MinigameLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  byRoleAccessRedirect(["admin", "member"], "/", true)
+  byRoleAccessRedirect(["admin", "member"], "/", false)
 
   return <>{children}</>
 }

@@ -1,9 +1,9 @@
 import { createServerActionProcedure } from "zsa"
 
 import { env } from "~/env"
+import { PublicError } from "~/errors"
 import { rateLimitByKey } from "~/lib/limiter"
 import { assertAuthenticated } from "~/lib/session"
-import { PublicError } from "~/use-cases/errors"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function shapeErrors({ err }: any) {
