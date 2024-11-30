@@ -47,3 +47,13 @@ export const getCurrentUser = cache(async () => {
   const { user } = await validateRequest()
   return user ?? undefined
 })
+
+export async function deleteSessionTokenCookie(): Promise<void> {
+  ;(await cookieStore).set(SESSION_COOKIE_NAME, "", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 0,
+    path: "/",
+  })
+}
