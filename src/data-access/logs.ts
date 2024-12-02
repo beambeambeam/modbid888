@@ -1,5 +1,5 @@
 import { database } from "~/db"
-import { userLogs } from "~/db/schema"
+import { betLogs, NewBetLog, userLogs } from "~/db/schema"
 import { UserId } from "~/types"
 
 export async function userChangeLogs(userId: UserId, action: string) {
@@ -11,4 +11,8 @@ export async function userChangeLogs(userId: UserId, action: string) {
       timestamp: new Date(),
     })
     .returning()
+}
+
+export async function betLog(action: NewBetLog) {
+  await database.insert(betLogs).values(action).returning()
 }

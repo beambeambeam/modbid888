@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm"
 
 import { database } from "~/db"
 import { profiles, Profiles } from "~/db/schema"
+import { NotFoundError } from "~/errors"
 import { UserId } from "~/types"
 
 export async function createProfile(userId: UserId, displayName: string) {
@@ -40,4 +41,38 @@ export async function updateProfile(
     .update(profiles)
     .set(updateProfile)
     .where(eq(profiles.userId, userId))
+}
+
+export async function getCurrentBalance(userId: UserId, trx = database) {
+  const profile = await trx.query.profiles.findFirst({
+    where: eq(profiles.userId, userId),
+  })
+
+  if (!profile || !profile?.balance) {
+    throw NotFoundError
+  }
+
+  return profile?.balance
+}
+
+export async function updateBet(
+  userId: UserId,
+  betAmount: number,
+  multiplier: number,
+  trx = database
+) {
+  const profile = await trx.query.profiles.findFirst({
+    where: eq(profiles.id, userId),
+  })
+
+  if (!profile || !profile.balance) {
+    throw NotFoundError
+  }
+
+  await trx
+    .update(profiles)
+    .set({ balance: profile.balance + betAmount * multiplier })
+    .where(eq(profiles.userId, userId))
+
+  return profile.balance + betAmount * multiplier
 }
