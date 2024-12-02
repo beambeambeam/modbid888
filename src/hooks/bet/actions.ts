@@ -1,7 +1,9 @@
 "use server"
 
+import { nanoid } from "nanoid"
 import { z } from "zod"
 
+import { betLog } from "~/data-access/logs"
 import { getCurrentBalance, updateBet } from "~/data-access/profiles"
 import { createTransaction } from "~/data-access/utils"
 import { authenticatedAction } from "~/lib/safe-action"
@@ -19,20 +21,29 @@ export const betTransaction = authenticatedAction
   .input(
     z.object({
       betAmount: z.number().min(1),
-      betResult: z.enum(["WIN", "LOSS"]),
+      betResult: z.enum(["win", "loss"]),
       minigameId: z.number(),
       multiplier: z.number(),
     })
   )
   .handler(async ({ ctx, input }) => {
     createTransaction(async (transaction) => {
-      const finalBalance = await updateBet(
+      const profit = await updateBet(
         ctx.user.id,
         input.betAmount,
-        input.betResult === "WIN" ? input.multiplier : -1,
+        input.betResult === "win" ? input.multiplier : -1,
         transaction
       )
 
-      return finalBalance
+      await betLog({
+        userId: ctx.user.id,
+        betAmount: input.betAmount,
+        timestamp: new Date(),
+        betResult: input.betResult,
+        profit: profit,
+        multiplier: input.betResult === "win" ? input.multiplier : -1,
+        minigamesId: input.minigameId,
+        id: nanoid(),
+      })
     })
   })

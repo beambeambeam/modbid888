@@ -1,1 +1,0 @@
-ALTER TABLE "minigames" DROP COLUMN IF EXISTS "loss_multiplier";

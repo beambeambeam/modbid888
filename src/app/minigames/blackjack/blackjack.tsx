@@ -129,7 +129,7 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
         betAmount: Number(bet),
         minigameId: minigameId,
         multiplier: multiplier,
-        betResult: "WIN",
+        betResult: "win",
       })
       setPlayerMoney((prev) => prev + Number(bet) * multiplier)
     } else {
@@ -137,7 +137,7 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
         betAmount: Number(bet),
         minigameId: minigameId,
         multiplier: -1,
-        betResult: "LOSS",
+        betResult: "loss",
       })
       setPlayerMoney((prev) => prev - Number(bet))
     }

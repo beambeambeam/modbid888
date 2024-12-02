@@ -7,6 +7,7 @@ import {
   serial,
   text,
   timestamp,
+  varchar,
 } from "drizzle-orm/pg-core"
 
 export const roleEnum = pgEnum("role", ["member", "admin"])
@@ -53,7 +54,7 @@ export const profiles = pgTable(
 export const userLogs = pgTable(
   "userlogs",
   {
-    id: serial("id").primaryKey(),
+    id: varchar({ length: 21 }).primaryKey(),
     userId: serial("user_id").references(() => users.id, {
       onDelete: "cascade",
     }),
@@ -64,7 +65,7 @@ export const userLogs = pgTable(
 )
 
 export const betLogs = pgTable("betlogs", {
-  id: serial("id").primaryKey(),
+  id: varchar({ length: 21 }).primaryKey(),
   userId: serial("user_id").references(() => users.id, {
     onDelete: "cascade",
   }),
@@ -86,7 +87,7 @@ export const minigames = pgTable("minigames", {
 })
 
 export const minigameLogs = pgTable("minigamelogs", {
-  id: serial("id").primaryKey(),
+  id: varchar({ length: 21 }).primaryKey(),
   minigameId: serial("minigame_id").references(() => minigames.id, {
     onDelete: "cascade",
   }),

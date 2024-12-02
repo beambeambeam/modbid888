@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1733133774849,
-      "tag": "20241202100254_curvy_big_bertha",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1733134177117,
-      "tag": "20241202100937_perpetual_kronos",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1733134239810,
-      "tag": "20241202101039_puzzling_night_thrasher",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1733134540048,
-      "tag": "20241202101540_broad_gorgon",
+      "when": 1733135378888,
+      "tag": "20241202102938_blue_scrambler",
       "breakpoints": true
     }
   ]

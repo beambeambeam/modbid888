@@ -1,6 +1,6 @@
 {
-  "id": "e60ad8f6-b326-4987-b93c-3b21c6432c3d",
-  "prevId": "e398d3af-bb70-46cf-90ac-1b1c8740908d",
+  "id": "072a93b0-b638-46fc-8e38-c753ef704752",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -73,7 +73,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar(21)",
           "primaryKey": true,
           "notNull": true
         },
@@ -154,7 +154,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar(21)",
           "primaryKey": true,
           "notNull": true
         },
@@ -266,7 +266,7 @@
           "name": "balance",
           "type": "real",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {
@@ -387,7 +387,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar(21)",
           "primaryKey": true,
           "notNull": true
         },

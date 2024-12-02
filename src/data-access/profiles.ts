@@ -75,5 +75,5 @@ export async function updateBet(
     .set({ balance: profile.balance + betAmount * multiplier })
     .where(eq(profiles.userId, userId))
 
-  return profile.balance + betAmount * multiplier
+  return betAmount * multiplier
 }
