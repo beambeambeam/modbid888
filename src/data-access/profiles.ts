@@ -11,6 +11,7 @@ export async function createProfile(userId: UserId, displayName: string) {
     .values({
       userId,
       displayName,
+      balance: 10000,
     })
     .onConflictDoNothing()
     .returning()

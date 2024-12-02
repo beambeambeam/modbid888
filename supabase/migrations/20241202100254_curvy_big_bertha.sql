@@ -1,5 +1,9 @@
-CREATE TYPE "public"."bet_results" AS ENUM('win', 'loss');--> statement-breakpoint
-CREATE TYPE "public"."role" AS ENUM('member', 'admin');--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."bet_results" AS ENUM('win', 'loss');
+ CREATE TYPE "public"."role" AS ENUM('member', 'admin');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
 CREATE TABLE IF NOT EXISTS "accounts" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" serial NOT NULL,

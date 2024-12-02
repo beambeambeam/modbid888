@@ -42,7 +42,7 @@ export const profiles = pgTable(
       .unique(),
     displayName: text("display_name").notNull(),
     role: roleEnum("role").notNull().default("member"),
-    balance: real("balance"),
+    balance: real("balance").notNull(),
   },
   (table) => [
     index("user_id_profile_type_idx").on(table.userId),
@@ -73,7 +73,7 @@ export const betLogs = pgTable("betlogs", {
     onDelete: "cascade",
   }),
   betAmount: real("bet_amount").notNull(),
-  betResult: betResultEnum("bet_result"),
+  betResult: betResultEnum("bet_result").notNull(),
   profit: real("profit").notNull(),
   multiplier: real("multiplier").notNull(),
 })
@@ -83,7 +83,6 @@ export const minigames = pgTable("minigames", {
   name: text("name").notNull(),
   description: text("description").notNull(),
   winMultiplier: real("win_multiplier").notNull(),
-  lossMultiplier: real("loss_multiplier").notNull(),
 })
 
 export const minigameLogs = pgTable("minigamelogs", {

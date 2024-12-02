@@ -1,0 +1,1 @@
+ALTER TABLE "betlogs" ALTER COLUMN "bet_result" SET NOT NULL;
