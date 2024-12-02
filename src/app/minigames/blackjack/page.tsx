@@ -3,14 +3,25 @@ import { redirect } from "next/navigation"
 import Blackjack from "~/app/minigames/blackjack/blackjack"
 import { getCurrentBalanceAction } from "~/hooks/bet/actions"
 
-async function BlackjackPage() {
-  const [data] = await getCurrentBalanceAction()
+import { getMinigameAction } from "../actions"
 
-  if (!data) {
+async function BlackjackPage() {
+  const [balance] = await getCurrentBalanceAction()
+  const [minigame] = await getMinigameAction({
+    minigameId: 1,
+  })
+
+  if (!balance || !minigame) {
     redirect("/")
   }
 
-  return <Blackjack balance={data} multiplier={1.8} minigameId={1} />
+  return (
+    <Blackjack
+      balance={balance}
+      multiplier={minigame.winMultiplier}
+      minigameId={minigame.id}
+    />
+  )
 }
 
 export default BlackjackPage
