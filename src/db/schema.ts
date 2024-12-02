@@ -140,3 +140,5 @@ export type Session = typeof sessions.$inferSelect
 export type NewSession = typeof sessions.$inferInsert
 export type BetLogs = typeof betLogs.$inferSelect
 export type NewBetLog = typeof betLogs.$inferInsert
+export type Minigame = typeof minigames.$inferSelect
+export type NewMinigame = typeof minigames.$inferInsert
