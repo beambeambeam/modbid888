@@ -1,4 +1,5 @@
 import { eq } from "drizzle-orm"
+import { nanoid } from "nanoid"
 
 import { getAccountByUserId } from "~/data-access/accounts"
 import { hashPassword } from "~/data-access/utils"
@@ -41,6 +42,7 @@ export async function getUserByEmail(email: string) {
 
 export async function addUserLogs(userId: UserId, action: string) {
   await database.insert(userLogs).values({
+    id: nanoid(),
     userId,
     action,
     timestamp: new Date(),
