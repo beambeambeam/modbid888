@@ -11,8 +11,8 @@ async function BlackjackPage() {
     minigameId: 1,
   })
 
-  if (!balance || !minigame) {
-    redirect("/")
+  if (balance === null || balance === undefined || !minigame) {
+    return redirect("/")
   }
 
   return (

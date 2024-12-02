@@ -49,7 +49,7 @@ export async function getCurrentBalance(userId: UserId, trx = database) {
     where: eq(profiles.userId, userId),
   })
 
-  if (!profile || !profile?.balance) {
+  if (!profile) {
     throw NotFoundError
   }
 
