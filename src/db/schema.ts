@@ -10,6 +10,7 @@ import {
 } from "drizzle-orm/pg-core"
 
 export const roleEnum = pgEnum("role", ["member", "admin"])
+export const betResultEnum = pgEnum("bet_results", ["win", "loss"])
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -72,7 +73,7 @@ export const betLogs = pgTable("betlogs", {
     onDelete: "cascade",
   }),
   betAmount: real("bet_amount").notNull(),
-  betResult: real("bet_result").notNull(),
+  betResult: betResultEnum("bet_result"),
   profit: real("profit").notNull(),
   multiplier: real("multiplier").notNull(),
 })

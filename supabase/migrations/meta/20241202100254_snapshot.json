@@ -1,6 +1,6 @@
 {
-  "id": "9bb39bf5-db71-4430-981f-0f5a3e8aed26",
-  "prevId": "bbde80a2-8ee2-4172-bcdd-2f7fc662b76e",
+  "id": "9c517af3-a767-4db6-b229-2b08cb72467d",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -103,9 +103,10 @@
         },
         "bet_result": {
           "name": "bet_result",
-          "type": "real",
+          "type": "bet_results",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "profit": {
           "name": "profit",
@@ -482,6 +483,11 @@
     }
   },
   "enums": {
+    "public.bet_results": {
+      "name": "bet_results",
+      "schema": "public",
+      "values": ["win", "loss"]
+    },
     "public.role": {
       "name": "role",
       "schema": "public",

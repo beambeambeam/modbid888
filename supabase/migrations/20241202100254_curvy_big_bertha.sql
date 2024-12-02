@@ -1,23 +1,19 @@
-DO $$ BEGIN
- CREATE TYPE "public"."role" AS ENUM('member', 'admin');
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
-
+CREATE TYPE "public"."bet_results" AS ENUM('win', 'loss');--> statement-breakpoint
+CREATE TYPE "public"."role" AS ENUM('member', 'admin');--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "accounts" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" serial NOT NULL,
 	"password" text NOT NULL,
 	"salt" text NOT NULL
 );
-
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "betlogs" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" serial NOT NULL,
 	"timestamp" timestamp NOT NULL,
 	"minigames_id" serial NOT NULL,
 	"bet_amount" real NOT NULL,
-	"bet_result" real NOT NULL,
+	"bet_result" "bet_results",
 	"profit" real NOT NULL,
 	"multiplier" real NOT NULL
 );
@@ -42,6 +38,7 @@ CREATE TABLE IF NOT EXISTS "profiles" (
 	"user_id" serial NOT NULL,
 	"display_name" text NOT NULL,
 	"role" "role" DEFAULT 'member' NOT NULL,
+	"balance" real,
 	CONSTRAINT "profiles_user_id_unique" UNIQUE("user_id")
 );
 --> statement-breakpoint
@@ -60,7 +57,7 @@ CREATE TABLE IF NOT EXISTS "userlogs" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "users" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"email" text,
+	"email" text NOT NULL,
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
