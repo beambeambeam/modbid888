@@ -1,12 +1,26 @@
-import React from "react"
+import { redirect } from "next/navigation"
 
-import Blackjack from "../../../app/minigames/blackjack/blackjack"
+import Blackjack from "~/app/minigames/blackjack/blackjack"
+import { getCurrentBalanceAction } from "~/hooks/bet/actions"
 
-function BlackjackPage() {
+import { getMinigameAction } from "../actions"
+
+async function BlackjackPage() {
+  const [balance] = await getCurrentBalanceAction()
+  const [minigame] = await getMinigameAction({
+    minigameId: 1,
+  })
+
+  if (balance === null || balance === undefined || !minigame) {
+    return redirect("/")
+  }
+
   return (
-    <div>
-      <Blackjack /> {}
-    </div>
+    <Blackjack
+      balance={balance}
+      multiplier={minigame.winMultiplier}
+      minigameId={minigame.id}
+    />
   )
 }
 

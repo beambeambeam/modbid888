@@ -15,9 +15,8 @@
     "db:generate": "drizzle-kit generate --config=drizzle.config.ts",
     "db:studio": "drizzle-kit studio",
     "db:clear": "tsx ./src/db/clear.ts",
-    "db:reset": "npm run db:clear && npm run db:migrate",
-    "db:local": "supabase start",
-    "db:local:stop": "supabase stop"
+    "db:seed": "tsx ./src/db/seed.ts",
+    "db:reset": "npm run db:clear && npm run db:migrate && npm run db:seed"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -33,6 +32,7 @@
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.36.0",
     "lucide-react": "^0.456.0",
+    "nanoid": "^5.0.9",
     "next": "15.0.2",
     "postgres": "^3.4.5",
     "posthog-js": "^1.187.2",

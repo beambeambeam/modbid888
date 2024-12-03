@@ -1,6 +1,6 @@
 {
-  "id": "9bb39bf5-db71-4430-981f-0f5a3e8aed26",
-  "prevId": "bbde80a2-8ee2-4172-bcdd-2f7fc662b76e",
+  "id": "072a93b0-b638-46fc-8e38-c753ef704752",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -73,7 +73,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar(21)",
           "primaryKey": true,
           "notNull": true
         },
@@ -103,7 +103,8 @@
         },
         "bet_result": {
           "name": "bet_result",
-          "type": "real",
+          "type": "bet_results",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
         },
@@ -153,7 +154,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar(21)",
           "primaryKey": true,
           "notNull": true
         },
@@ -221,12 +222,6 @@
           "type": "real",
           "primaryKey": false,
           "notNull": true
-        },
-        "loss_multiplier": {
-          "name": "loss_multiplier",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true
         }
       },
       "indexes": {},
@@ -271,7 +266,7 @@
           "name": "balance",
           "type": "real",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {
@@ -392,7 +387,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar(21)",
           "primaryKey": true,
           "notNull": true
         },
@@ -482,6 +477,11 @@
     }
   },
   "enums": {
+    "public.bet_results": {
+      "name": "bet_results",
+      "schema": "public",
+      "values": ["win", "loss"]
+    },
     "public.role": {
       "name": "role",
       "schema": "public",

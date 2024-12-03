@@ -7,9 +7,11 @@ import {
   serial,
   text,
   timestamp,
+  varchar,
 } from "drizzle-orm/pg-core"
 
 export const roleEnum = pgEnum("role", ["member", "admin"])
+export const betResultEnum = pgEnum("bet_results", ["win", "loss"])
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -41,7 +43,7 @@ export const profiles = pgTable(
       .unique(),
     displayName: text("display_name").notNull(),
     role: roleEnum("role").notNull().default("member"),
-    balance: real("balance"),
+    balance: real("balance").notNull(),
   },
   (table) => [
     index("user_id_profile_type_idx").on(table.userId),
@@ -52,7 +54,7 @@ export const profiles = pgTable(
 export const userLogs = pgTable(
   "userlogs",
   {
-    id: serial("id").primaryKey(),
+    id: varchar({ length: 21 }).primaryKey(),
     userId: serial("user_id").references(() => users.id, {
       onDelete: "cascade",
     }),
@@ -63,7 +65,7 @@ export const userLogs = pgTable(
 )
 
 export const betLogs = pgTable("betlogs", {
-  id: serial("id").primaryKey(),
+  id: varchar({ length: 21 }).primaryKey(),
   userId: serial("user_id").references(() => users.id, {
     onDelete: "cascade",
   }),
@@ -72,7 +74,7 @@ export const betLogs = pgTable("betlogs", {
     onDelete: "cascade",
   }),
   betAmount: real("bet_amount").notNull(),
-  betResult: real("bet_result").notNull(),
+  betResult: betResultEnum("bet_result").notNull(),
   profit: real("profit").notNull(),
   multiplier: real("multiplier").notNull(),
 })
@@ -82,11 +84,10 @@ export const minigames = pgTable("minigames", {
   name: text("name").notNull(),
   description: text("description").notNull(),
   winMultiplier: real("win_multiplier").notNull(),
-  lossMultiplier: real("loss_multiplier").notNull(),
 })
 
 export const minigameLogs = pgTable("minigamelogs", {
-  id: serial("id").primaryKey(),
+  id: varchar({ length: 21 }).primaryKey(),
   minigameId: serial("minigame_id").references(() => minigames.id, {
     onDelete: "cascade",
   }),
@@ -139,3 +140,5 @@ export type Session = typeof sessions.$inferSelect
 export type NewSession = typeof sessions.$inferInsert
 export type BetLogs = typeof betLogs.$inferSelect
 export type NewBetLog = typeof betLogs.$inferInsert
+export type Minigame = typeof minigames.$inferSelect
+export type NewMinigame = typeof minigames.$inferInsert
