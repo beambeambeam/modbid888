@@ -5,7 +5,14 @@ import { Role } from "~/types"
 
 import { assertAuthenticated } from "./session"
 
-export const isAllowRole = async (allowRole: Role | Role[]) => {
+export const isAllowRole = async (
+  allowRole: Role | Role[],
+  bypass?: boolean
+) => {
+  if (bypass) {
+    return true
+  }
+
   try {
     const user = await assertAuthenticated()
     const role = await getRoleByUserId(user.id)
