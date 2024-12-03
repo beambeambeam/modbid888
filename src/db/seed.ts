@@ -1,8 +1,10 @@
 import "dotenv/config"
 
+import { nanoid } from "nanoid"
+
 import { MINIGAME_DEFAULT } from "~/db/default"
 import { database, pg } from "~/db/index"
-import { accounts, minigames, profiles, users } from "~/db/schema"
+import { accounts, minigames, profiles, userLogs, users } from "~/db/schema"
 
 async function main() {
   await database.insert(minigames).values(MINIGAME_DEFAULT)
@@ -23,6 +25,12 @@ async function main() {
     balance: 1_000_000,
     role: "member",
     displayName: "dummy",
+  })
+  await database.insert(userLogs).values({
+    id: nanoid(),
+    action: "created",
+    timestamp: new Date(),
+    userId: 1,
   })
 
   await pg.end()
