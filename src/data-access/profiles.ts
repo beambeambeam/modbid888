@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm"
+import { asc, eq } from "drizzle-orm"
 
 import { database } from "~/db"
 import { profiles, Profiles } from "~/db/schema"
@@ -76,4 +76,12 @@ export async function updateBet(
     .where(eq(profiles.userId, userId))
 
   return betAmount * multiplier
+}
+
+export async function getTop10Balance() {
+  const top10 = await database.query.profiles.findMany({
+    limit: 10,
+    orderBy: [asc(profiles.balance)],
+  })
+  return top10
 }
