@@ -66,7 +66,7 @@ export async function updateBet(
     where: eq(profiles.id, userId),
   })
 
-  if (!profile || !profile.balance) {
+  if (!profile) {
     throw NotFoundError
   }
 

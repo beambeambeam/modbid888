@@ -72,7 +72,9 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
   const startGame = () => {
     setIsGameRunning(true)
     const betAmount = Number(bet)
-    if (betAmount <= 0 || betAmount > playerMoney) {
+    if (playerMoney <= 0) {
+      setBet("100")
+    } else if (betAmount <= 0 || betAmount > playerMoney) {
       alert("Please place a valid bet.")
       setIsGameRunning(false)
       return
