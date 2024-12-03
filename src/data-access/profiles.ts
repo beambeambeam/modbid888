@@ -1,4 +1,4 @@
-import { asc, eq } from "drizzle-orm"
+import { desc, eq } from "drizzle-orm"
 
 import { database } from "~/db"
 import { profiles, Profiles } from "~/db/schema"
@@ -81,7 +81,7 @@ export async function updateBet(
 export async function getTop10Balance() {
   const top10 = await database.query.profiles.findMany({
     limit: 10,
-    orderBy: [asc(profiles.balance)],
+    orderBy: [desc(profiles.balance)],
   })
   return top10
 }
