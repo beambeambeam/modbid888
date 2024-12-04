@@ -1,11 +1,11 @@
-import { redirect } from "next/navigation"
+"use server"
 
 import { getRoleByUserId } from "~/data-access/profiles"
-import { env } from "~/env"
-import { assertAuthenticated } from "~/lib/session"
-import { Role } from "~/use-cases/types"
+import { Role } from "~/types"
 
-export const byRoleAccess = async (allowRole: Role | Role[]) => {
+import { assertAuthenticated } from "./session"
+
+export const isAllowRole = async (allowRole: Role | Role[]) => {
   try {
     const user = await assertAuthenticated()
     const role = await getRoleByUserId(user.id)
@@ -15,32 +15,15 @@ export const byRoleAccess = async (allowRole: Role | Role[]) => {
     }
 
     if (Array.isArray(allowRole)) {
-      if (!allowRole.includes(role)) {
-        return false
+      if (allowRole.includes(role)) {
+        return true
       }
     } else {
-      if (role !== allowRole) {
-        return false
+      if (role === allowRole) {
+        return true
       }
     }
   } catch {
     return false
   }
-
-  return true
-}
-
-export const byRoleAccessRedirect = async (
-  allowRole: Role | Role[],
-  redirectPath: string
-) => {
-  if (env.NODE_ENV === "development") {
-    return
-  }
-
-  if (!(await byRoleAccess(allowRole))) {
-    return redirect(redirectPath)
-  }
-
-  return
 }

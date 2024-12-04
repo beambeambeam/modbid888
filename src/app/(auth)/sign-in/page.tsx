@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from "~/components/ui/form"
 import { Input } from "~/components/ui/input"
+import { useToast } from "~/hooks/use-toast"
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -23,7 +24,22 @@ const loginSchema = z.object({
 })
 
 export default function SignIn() {
-  const { execute } = useServerAction(signInAction)
+  const { toast } = useToast()
+  const { execute } = useServerAction(signInAction, {
+    onError({ err }) {
+      toast({
+        title: "Something went wrong",
+        description: err.message,
+        variant: "destructive",
+      })
+    },
+    onSuccess() {
+      toast({
+        title: "Let's Go!",
+        description: "Enjoy your session",
+      })
+    },
+  })
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),

@@ -15,9 +15,8 @@
     "db:generate": "drizzle-kit generate --config=drizzle.config.ts",
     "db:studio": "drizzle-kit studio",
     "db:clear": "tsx ./src/db/clear.ts",
-    "db:reset": "npm run db:clear && npm run db:migrate",
-    "db:local": "supabase start",
-    "db:local:stop": "supabase stop"
+    "db:seed": "tsx ./src/db/seed.ts",
+    "db:reset": "npm run db:clear && npm run db:migrate && npm run db:seed"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -25,13 +24,16 @@
     "@oslojs/encoding": "^1.1.0",
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-slot": "^1.1.0",
+    "@radix-ui/react-toast": "^1.2.2",
     "@t3-oss/env-nextjs": "^0.11.1",
+    "@tanstack/react-query": "^5.61.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.36.0",
     "framer-motion": "^11.13.1",
     "lucide-react": "^0.456.0",
+    "nanoid": "^5.0.9",
     "next": "15.0.2",
     "postgres": "^3.4.5",
     "posthog-js": "^1.187.2",
@@ -44,7 +46,8 @@
     "unique-names-generator": "^4.7.1",
     "zod": "^3.23.8",
     "zsa": "^0.6.0",
-    "zsa-react": "^0.2.3"
+    "zsa-react": "^0.2.3",
+    "zsa-react-query": "^0.2.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.5.0",

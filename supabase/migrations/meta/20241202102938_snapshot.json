@@ -1,6 +1,6 @@
 {
-  "id": "5fbdccc2-0efa-418d-860f-41cd5cf88d0e",
-  "prevId": "7914d4b9-4d1b-4b29-8a66-4aba93a2b621",
+  "id": "072a93b0-b638-46fc-8e38-c753ef704752",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -67,6 +67,171 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.betlogs": {
+      "name": "betlogs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(21)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "minigames_id": {
+          "name": "minigames_id",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bet_amount": {
+          "name": "bet_amount",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bet_result": {
+          "name": "bet_result",
+          "type": "bet_results",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "profit": {
+          "name": "profit",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "multiplier": {
+          "name": "multiplier",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "betlogs_user_id_users_id_fk": {
+          "name": "betlogs_user_id_users_id_fk",
+          "tableFrom": "betlogs",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "betlogs_minigames_id_minigames_id_fk": {
+          "name": "betlogs_minigames_id_minigames_id_fk",
+          "tableFrom": "betlogs",
+          "tableTo": "minigames",
+          "columnsFrom": ["minigames_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.minigamelogs": {
+      "name": "minigamelogs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(21)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "minigame_id": {
+          "name": "minigame_id",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "action": {
+          "name": "action",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "minigamelogs_minigame_id_minigames_id_fk": {
+          "name": "minigamelogs_minigame_id_minigames_id_fk",
+          "tableFrom": "minigamelogs",
+          "tableTo": "minigames",
+          "columnsFrom": ["minigame_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.minigames": {
+      "name": "minigames",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "win_multiplier": {
+          "name": "win_multiplier",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.profiles": {
       "name": "profiles",
       "schema": "",
@@ -96,6 +261,12 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'member'"
+        },
+        "balance": {
+          "name": "balance",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {
@@ -153,8 +324,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.session": {
-      "name": "session",
+    "public.sessions": {
+      "name": "sessions",
       "schema": "",
       "columns": {
         "id": {
@@ -194,9 +365,9 @@
         }
       },
       "foreignKeys": {
-        "session_userId_users_id_fk": {
-          "name": "session_userId_users_id_fk",
-          "tableFrom": "session",
+        "sessions_userId_users_id_fk": {
+          "name": "sessions_userId_users_id_fk",
+          "tableFrom": "sessions",
           "tableTo": "users",
           "columnsFrom": ["userId"],
           "columnsTo": ["id"],
@@ -210,13 +381,13 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.user_logs": {
-      "name": "user_logs",
+    "public.userlogs": {
+      "name": "userlogs",
       "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar(21)",
           "primaryKey": true,
           "notNull": true
         },
@@ -257,9 +428,9 @@
         }
       },
       "foreignKeys": {
-        "user_logs_user_id_users_id_fk": {
-          "name": "user_logs_user_id_users_id_fk",
-          "tableFrom": "user_logs",
+        "userlogs_user_id_users_id_fk": {
+          "name": "userlogs_user_id_users_id_fk",
+          "tableFrom": "userlogs",
           "tableTo": "users",
           "columnsFrom": ["user_id"],
           "columnsTo": ["id"],
@@ -287,7 +458,7 @@
           "name": "email",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
@@ -306,6 +477,11 @@
     }
   },
   "enums": {
+    "public.bet_results": {
+      "name": "bet_results",
+      "schema": "public",
+      "values": ["win", "loss"]
+    },
     "public.role": {
       "name": "role",
       "schema": "public",

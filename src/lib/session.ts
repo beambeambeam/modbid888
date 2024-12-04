@@ -4,8 +4,8 @@ import { cache } from "react"
 import { cookies } from "next/headers"
 
 import { createSession, generateSessionToken, validateRequest } from "~/auth"
-import { AuthenticationError } from "~/use-cases/errors"
-import { UserId } from "~/use-cases/types"
+import { AuthenticationError } from "~/errors"
+import { UserId } from "~/types"
 
 const SESSION_COOKIE_NAME = "session"
 
@@ -47,3 +47,13 @@ export const getCurrentUser = cache(async () => {
   const { user } = await validateRequest()
   return user ?? undefined
 })
+
+export async function deleteSessionTokenCookie(): Promise<void> {
+  ;(await cookieStore).set(SESSION_COOKIE_NAME, "", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 0,
+    path: "/",
+  })
+}

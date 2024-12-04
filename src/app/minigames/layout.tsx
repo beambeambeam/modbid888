@@ -1,11 +1,14 @@
-import { byRoleAccessRedirect } from "~/lib/roles"
+import { redirect } from "next/navigation"
+
+import { isAllowRole } from "~/lib/roles"
 
 export default async function MinigameLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  byRoleAccessRedirect(["admin", "member"], "/")
-
+  if (!(await isAllowRole(["admin", "member"]))) {
+    return redirect("/")
+  }
   return <>{children}</>
 }

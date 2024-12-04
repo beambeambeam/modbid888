@@ -1,7 +1,9 @@
 "use client"
 
-// src/BlackjackGame.tsx
 import React, { useState } from "react"
+import { useServerAction } from "zsa-react"
+
+import { betTransaction } from "~/hooks/bet/actions"
 
 type Card = {
   suit: string
@@ -31,14 +33,27 @@ const values = [
   { value: "K", score: 10 },
 ]
 
-const BlackjackGame: React.FC = () => {
+type BlackjackGameProps = {
+  balance: number
+  multiplier: number
+  minigameId: number
+}
+
+const BlackjackGame: React.FC<BlackjackGameProps> = ({
+  balance,
+  multiplier,
+  minigameId,
+}) => {
   const [player, setPlayer] = useState<Player>({ hand: [], score: 0 })
   const [dealer, setDealer] = useState<Player>({ hand: [], score: 0 })
   const [deck, setDeck] = useState<Card[]>([])
   const [gameOver, setGameOver] = useState(false)
   const [dealerRevealed, setDealerRevealed] = useState(false)
   const [bet, setBet] = useState<string>("")
-  const [playerMoney, setPlayerMoney] = useState<number>(1000)
+  const [playerMoney, setPlayerMoney] = useState<number>(balance)
+  const [isGameRunning, setIsGameRunning] = useState<boolean>(false)
+
+  const { execute: updateBet } = useServerAction(betTransaction)
 
   const initializeDeck = (): Card[] => {
     const deck: Card[] = []
@@ -55,9 +70,13 @@ const BlackjackGame: React.FC = () => {
   }
 
   const startGame = () => {
+    setIsGameRunning(true)
     const betAmount = Number(bet)
-    if (betAmount <= 0 || betAmount > playerMoney) {
+    if (playerMoney <= 0) {
+      setBet("100")
+    } else if (betAmount <= 0 || betAmount > playerMoney) {
       alert("Please place a valid bet.")
+      setIsGameRunning(false)
       return
     }
     const newDeck = initializeDeck()
@@ -104,16 +123,28 @@ const BlackjackGame: React.FC = () => {
   }
 
   const calculateWinner = () => {
-    let updatedMoney = playerMoney
-    const betAmount = Number(bet)
-    if (player.score > 21) {
-      updatedMoney -= betAmount
-    } else if (dealer.score > 21 || player.score > dealer.score) {
-      updatedMoney += betAmount
-    } else if (player.score < dealer.score) {
-      updatedMoney -= betAmount
+    if (
+      dealer.score > 21 ||
+      (player.score > dealer.score && player.score <= 21)
+    ) {
+      updateBet({
+        betAmount: Number(bet),
+        minigameId: minigameId,
+        multiplier: multiplier,
+        betResult: "win",
+      })
+      setPlayerMoney((prev) => prev + Number(bet) * multiplier)
+    } else {
+      updateBet({
+        betAmount: Number(bet),
+        minigameId: minigameId,
+        multiplier: -1,
+        betResult: "loss",
+      })
+      setPlayerMoney((prev) => prev - Number(bet))
     }
-    setPlayerMoney(updatedMoney)
+
+    setIsGameRunning(false)
   }
 
   const renderResult = () => {
@@ -131,6 +162,7 @@ const BlackjackGame: React.FC = () => {
   return (
     <div className="text-center">
       <h1 className="text-4xl font-bold">Blackjack</h1>
+      <h1>win: {multiplier}</h1>
       <div className="my-4">
         <h3 className="text-xl">Your Money: ${playerMoney}</h3>
         <input
@@ -138,10 +170,12 @@ const BlackjackGame: React.FC = () => {
           value={bet}
           onChange={(e) => setBet(e.target.value)}
           placeholder="Enter Bet"
+          disabled={isGameRunning}
           className="text-lg px-4 py-2 border border-gray-300 rounded mr-2"
         />
         <button
           onClick={startGame}
+          disabled={isGameRunning}
           className="text-lg px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
           Start Game
