@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import localFont from "next/font/local"
 
+import Banner from "~/components/banner"
 import Provider from "~/components/providers/app-provider"
 import { Toaster } from "~/components/ui/toaster"
 
@@ -34,6 +35,7 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
+          <Banner />
           <main>{children}</main>
           <Toaster />
         </body>
