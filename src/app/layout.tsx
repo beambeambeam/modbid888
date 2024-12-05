@@ -3,6 +3,7 @@ import localFont from "next/font/local"
 
 import Banner from "~/components/banner"
 import Provider from "~/components/providers/app-provider"
+import { ThemeProvider } from "~/components/providers/theme-provider"
 import { Toaster } from "~/components/ui/toaster"
 
 import "~/styles/globals.css"
@@ -35,9 +36,16 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <Banner />
-          <main>{children}</main>
-          <Toaster />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Banner />
+            <main>{children}</main>
+            <Toaster />
+          </ThemeProvider>
         </body>
       </Provider>
     </html>
