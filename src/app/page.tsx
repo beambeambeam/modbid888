@@ -1,3 +1,4 @@
+import Link from "next/link"
 import posthog from "posthog-js"
 
 import Banner from "~/components/banner"
@@ -22,10 +23,14 @@ export default function Home() {
             <h2 className="flex flex-row gap-3 text-4xl">Test it here.</h2>
           </div>
           <div className="flex flex-row gap-4">
-            <Button size="sm">Let&apos;s go</Button>
-            <Button size="sm" variant="ghost">
-              No account? Sign-up!
-            </Button>
+            <Link href="/sign-in">
+              <Button size="sm">Let&apos;s go</Button>
+            </Link>
+            <Link href="/sign-up">
+              <Button size="sm" variant="ghost">
+                No account? Sign-up!
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
