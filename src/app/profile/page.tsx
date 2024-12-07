@@ -9,7 +9,17 @@ import getUserProfile, {
   updateDisplayNameAction,
   updatePasswordAction,
 } from "~/app/profile/actions"
-import { Button } from "~/components/ui/button"
+import { Button, buttonVariants } from "~/components/ui/button"
+import { Card, CardFooter, CardHeader } from "~/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog"
 import {
   Form,
   FormControl,
@@ -34,11 +44,15 @@ function ProfilePage() {
   }
 
   return (
-    <div>
-      <Display {...data} />
-      <ChangeDisplayName displayName={data.displayName} />
-      <ChangePassword />
-    </div>
+    <Card>
+      <CardHeader>
+        <Display {...data} />
+      </CardHeader>
+      <CardFooter className="flex flex-row gap-3">
+        <ChangePassword />
+        <ChangeDisplayName displayName={data.displayName} />
+      </CardFooter>
+    </Card>
   )
 }
 
@@ -83,32 +97,47 @@ function ChangeDisplayName({ displayName }: { displayName: string }) {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <FormField
-          control={form.control}
-          name="newDisplayName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Username</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button
-          type="submit"
-          disabled={form.getValues().newDisplayName == displayName}
-        >
-          Submit
-        </Button>
-      </form>
-    </Form>
+    <Dialog>
+      <DialogTrigger className={buttonVariants({ variant: "outline" })}>
+        Change Display Name
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Edit profile</DialogTitle>
+          <DialogDescription>
+            Make changes to your profile here. Click save when you&apos;re done.
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              control={form.control}
+              name="newDisplayName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    This is your public display name.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <Button
+                type="submit"
+                disabled={form.getValues().newDisplayName == displayName}
+              >
+                Submit
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
   )
 }
 
@@ -159,50 +188,67 @@ function ChangePassword() {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <FormField
-          control={form.control}
-          name="oldPassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Old Password</FormLabel>
-              <FormControl>
-                <Input type="password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="newPassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>New Password</FormLabel>
-              <FormControl>
-                <Input type="password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="newPasswordAgain"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Repeat New Password</FormLabel>
-              <FormControl>
-                <Input type="password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+    <Dialog>
+      <DialogTrigger className={buttonVariants({ variant: "outline" })}>
+        Change Password
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Change Password</DialogTitle>
+          <DialogDescription>
+            Enter your old password and new password. Click submit when
+            you&apos;re done.
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              control={form.control}
+              name="oldPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Old Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="newPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>New Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="newPasswordAgain"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Repeat New Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                  <FormDescription>Must be the same on top</FormDescription>
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <Button type="submit">Submit</Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
   )
 }
 
