@@ -10,7 +10,13 @@ import getUserProfile, {
   updatePasswordAction,
 } from "~/app/profile/actions"
 import { Button, buttonVariants } from "~/components/ui/button"
-import { Card, CardFooter, CardHeader } from "~/components/ui/card"
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -32,6 +38,7 @@ import {
 import { Input } from "~/components/ui/input"
 import { useServerActionQuery } from "~/hooks/server-action-hooks"
 import { useToast } from "~/hooks/use-toast"
+import { cn } from "~/lib/utils"
 
 function ProfilePage() {
   const { data, isError } = useServerActionQuery(getUserProfile, {
@@ -44,15 +51,25 @@ function ProfilePage() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <Display {...data} />
-      </CardHeader>
-      <CardFooter className="flex flex-row gap-3">
-        <ChangePassword />
-        <ChangeDisplayName displayName={data.displayName} />
-      </CardFooter>
-    </Card>
+    <div className="w-full grid grid-cols-2 h-full">
+      <div className="w-full h-full flex items-center justify-center">
+        <Card className="w-full mx-20">
+          <CardHeader>
+            <Display {...data} />
+          </CardHeader>
+          <CardFooter className="flex flex-row gap-3">
+            <ChangePassword />
+            <ChangeDisplayName displayName={data.displayName} />
+          </CardFooter>
+        </Card>
+      </div>
+      <div className="w-full h-full flex items-start justify-center flex-col">
+        <h1 className="text-4xl font-alagard">Bet logs.</h1>
+        <p className="text-muted-foreground text-xl">
+          Let&apos;s get in to some statistics
+        </p>
+      </div>
+    </div>
   )
 }
 
@@ -61,15 +78,24 @@ type DisplayProps = {
   role: "member" | "admin"
   userId: number
   displayName: string
+  balance: number
 }
 
-function Display({ displayName, role, userId }: DisplayProps) {
+function Display({ displayName, role, userId, balance }: DisplayProps) {
   return (
-    <div>
-      <p>{displayName}</p>
-      <p>{userId}</p>
-      <p>{role}</p>
-    </div>
+    <>
+      <CardTitle className="w-full flex flex-row font-alagard text-3xl items-center justify-between">
+        <div className="flex flex-row font-normal">
+          <p>{displayName}</p>
+          <p>#</p>
+          <p>{userId}</p>
+        </div>
+        <div className={`${cn(balance < -1 ? "text-red-500" : "text-white")}`}>
+          {balance}
+        </div>
+      </CardTitle>
+      <CardDescription className="font-alagard text-xl">{role}</CardDescription>
+    </>
   )
 }
 
