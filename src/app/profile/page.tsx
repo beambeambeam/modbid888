@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ColumnDef } from "@tanstack/react-table"
+import { ArrowUpDown } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useServerAction } from "zsa-react"
@@ -298,24 +299,92 @@ function BetlogsTable() {
   const columns: ColumnDef<ArrayElement<NonNullable<typeof data>>>[] = [
     {
       accessorKey: "minigame",
+      cell: ({ row }) => {
+        return <p className="capitalize">{row.original.minigame}</p>
+      },
     },
     {
       accessorKey: "betAmount",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Bet Amount
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell(props) {
+        return (
+          <p className="w-full text-center">
+            {props.row.getValue("betAmount")}
+          </p>
+        )
+      },
     },
     {
       accessorKey: "betResult",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Bet Results
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell(props) {
+        return (
+          <p className="w-full text-center">
+            {props.row.getValue("betAmount")}
+          </p>
+        )
+      },
     },
     {
       accessorKey: "profit",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Profit
+            <ArrowUpDown className="h-4 w-4" />
+          </Button>
+        )
+      },
+      cell(props) {
+        return (
+          <p className="w-full text-center">
+            {props.row.getValue("betAmount")}
+          </p>
+        )
+      },
     },
     {
       accessorKey: "timestamp",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Timestamp
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
       cell: ({ row }) => {
         const date = row.original.timestamp
         return (
           <p>
-            {date.getDate().toString().padStart(2, "0")}:
-            {(date.getMonth() + 1).toString().padStart(2, "0")}:
+            {date.getDate().toString().padStart(2, "0")}/
+            {(date.getMonth() + 1).toString().padStart(2, "0")}/
             {date.getFullYear()} {date.getHours().toString().padStart(2, "0")}:
             {date.getMinutes().toString().padStart(2, "0")}:
             {date.getSeconds().toString().padStart(2, "0")}
@@ -325,7 +394,7 @@ function BetlogsTable() {
     },
   ]
 
-  return <DataTable columns={columns} data={data} pagination />
+  return <DataTable columns={columns} data={data} pagination sort />
 }
 
 export default ProfilePage
