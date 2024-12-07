@@ -1,10 +1,25 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useLocalStorage } from "@uidotdev/usehooks"
 import { X } from "lucide-react"
 
 function Banner() {
   const [visible, setVisible] = useState(true)
+
+  const [isBannerVisible, setIsBannerVisible] = useLocalStorage(
+    "bannerVisible",
+    true
+  )
+
+  useEffect(() => {
+    setVisible(isBannerVisible)
+  }, [isBannerVisible])
+
+  const handleClose = () => {
+    setVisible(false)
+    setIsBannerVisible(false)
+  }
 
   if (!visible) return null
 
@@ -21,7 +36,7 @@ function Banner() {
       </div>
       <X
         className="size-6 text-foreground cursor-pointer"
-        onClick={() => setVisible(false)}
+        onClick={handleClose}
       />
     </div>
   )
