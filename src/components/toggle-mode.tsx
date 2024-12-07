@@ -9,9 +9,10 @@ function ModeTogger() {
   const { setTheme, theme } = useTheme()
   return (
     <Button
-      variant="ghost"
+      variant="outline"
       size="icon"
       onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+      className="p-0"
     >
       <SunMoonIcon className="size-6 text-foreground" />
     </Button>
