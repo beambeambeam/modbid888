@@ -3,8 +3,9 @@ import posthog from "posthog-js"
 
 import Banner from "~/components/banner"
 import { Button } from "~/components/ui/button"
+import { assertAuthenticated } from "~/lib/session"
 
-export default function Home() {
+export default async function Home() {
   posthog.capture("my event", { property: "value" })
 
   return (
@@ -23,14 +24,28 @@ export default function Home() {
             <h2 className="flex flex-row gap-3 text-4xl">Test it here.</h2>
           </div>
           <div className="flex flex-row gap-4">
-            <Link href="/sign-in">
-              <Button size="sm">Let&apos;s go</Button>
-            </Link>
-            <Link href="/sign-up">
-              <Button size="sm" variant="ghost">
-                No account? Sign-up!
-              </Button>
-            </Link>
+            {(await assertAuthenticated()) ? (
+              <Link href="/minigames">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="font-alagard text-xl"
+                >
+                  Play a game!
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link href="/sign-in">
+                  <Button size="sm">Let&apos;s go</Button>
+                </Link>
+                <Link href="/sign-up">
+                  <Button size="sm" variant="ghost">
+                    No account? Sign-up!
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
