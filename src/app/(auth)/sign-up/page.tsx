@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -139,8 +140,15 @@ export default function SignUp() {
                   )}
                 />
               </CardContent>
-              <CardFooter>
-                <Button type="submit">Sign Up</Button>
+              <CardFooter className="flex flex-row justify-between w-full items-center">
+                <Button className="font-alagard" type="submit">
+                  Sign me up!
+                </Button>
+                <Link href="/sign-in  ">
+                  <p className="text-sm text-muted-foreground cursor-pointer hover:underline">
+                    already have account? click here!
+                  </p>
+                </Link>
               </CardFooter>
             </form>
           </Form>
