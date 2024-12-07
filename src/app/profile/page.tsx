@@ -1,14 +1,17 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { ColumnDef } from "@tanstack/react-table"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useServerAction } from "zsa-react"
 
 import getUserProfile, {
+  getBetlogsAction,
   updateDisplayNameAction,
   updatePasswordAction,
 } from "~/app/profile/actions"
+import { DataTable } from "~/components/table/data-table"
 import { Button, buttonVariants } from "~/components/ui/button"
 import {
   Card,
@@ -39,6 +42,7 @@ import { Input } from "~/components/ui/input"
 import { useServerActionQuery } from "~/hooks/server-action-hooks"
 import { useToast } from "~/hooks/use-toast"
 import { cn } from "~/lib/utils"
+import { ArrayElement } from "~/types"
 
 function ProfilePage() {
   const { data, isError } = useServerActionQuery(getUserProfile, {
@@ -63,11 +67,14 @@ function ProfilePage() {
           </CardFooter>
         </Card>
       </div>
-      <div className="w-full h-full flex items-start justify-center flex-col">
-        <h1 className="text-4xl font-alagard">Bet logs.</h1>
-        <p className="text-muted-foreground text-xl">
-          Let&apos;s get in to some statistics
-        </p>
+      <div className="w-full h-full flex justify-center flex-col items-center gap-6 px-5">
+        <div className="flex flex-col w-full">
+          <h1 className="text-4xl font-alagard text-start w-full">Bet logs.</h1>
+          <p className="text-muted-foreground text-xl text-start w-full">
+            Let&apos;s get in to some statistics
+          </p>
+        </div>
+        <BetlogsTable />
       </div>
     </div>
   )
@@ -276,6 +283,49 @@ function ChangePassword() {
       </DialogContent>
     </Dialog>
   )
+}
+
+function BetlogsTable() {
+  const { data } = useServerActionQuery(getBetlogsAction, {
+    queryKey: ["betlogs"],
+    input: undefined,
+  })
+
+  if (!data) {
+    return null
+  }
+
+  const columns: ColumnDef<ArrayElement<NonNullable<typeof data>>>[] = [
+    {
+      accessorKey: "minigame",
+    },
+    {
+      accessorKey: "betAmount",
+    },
+    {
+      accessorKey: "betResult",
+    },
+    {
+      accessorKey: "profit",
+    },
+    {
+      accessorKey: "timestamp",
+      cell: ({ row }) => {
+        const date = row.original.timestamp
+        return (
+          <p>
+            {date.getDate().toString().padStart(2, "0")}:
+            {(date.getMonth() + 1).toString().padStart(2, "0")}:
+            {date.getFullYear()} {date.getHours().toString().padStart(2, "0")}:
+            {date.getMinutes().toString().padStart(2, "0")}:
+            {date.getSeconds().toString().padStart(2, "0")}
+          </p>
+        )
+      },
+    },
+  ]
+
+  return <DataTable columns={columns} data={data} pagination />
 }
 
 export default ProfilePage
