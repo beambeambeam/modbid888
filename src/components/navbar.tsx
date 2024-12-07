@@ -1,5 +1,5 @@
+import Logout from "./sign-out"
 import ModeTogger from "./toggle-mode"
-import { Button } from "./ui/button"
 import { Separator } from "./ui/separator"
 
 function Navbar() {
@@ -13,9 +13,7 @@ function Navbar() {
             <p>#</p>
             <p>1</p>
           </div>
-          <Button variant="outline" className="font-alagard">
-            Let me out!
-          </Button>
+          <Logout />
           <ModeTogger />
         </div>
       </div>

@@ -3,7 +3,7 @@ import posthog from "posthog-js"
 
 import Banner from "~/components/banner"
 import { Button } from "~/components/ui/button"
-import { assertAuthenticated } from "~/lib/session"
+import { isAllowRole } from "~/lib/roles"
 
 export default async function Home() {
   posthog.capture("my event", { property: "value" })
@@ -24,7 +24,7 @@ export default async function Home() {
             <h2 className="flex flex-row gap-3 text-4xl">Test it here.</h2>
           </div>
           <div className="flex flex-row gap-4">
-            {(await assertAuthenticated()) ? (
+            {(await isAllowRole(["admin", "member"])) ? (
               <Link href="/minigames">
                 <Button
                   variant="outline"
