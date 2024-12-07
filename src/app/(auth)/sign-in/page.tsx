@@ -76,7 +76,7 @@ export default function SignIn() {
           </CardHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <CardContent>
+              <CardContent className="gap-5 flex flex-col">
                 <FormField
                   control={form.control}
                   name="email"
