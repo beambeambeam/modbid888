@@ -8,6 +8,13 @@ import { useServerAction } from "zsa-react"
 import { signInAction } from "~/app/(auth)/sign-in/actions"
 import { Button } from "~/components/ui/button"
 import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card"
+import {
   Form,
   FormControl,
   FormField,
@@ -19,8 +26,10 @@ import { Input } from "~/components/ui/input"
 import { useToast } from "~/hooks/use-toast"
 
 const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
+  email: z.string().email().min(1),
+  password: z.string().min(6, {
+    message: "Password is required to sign-in",
+  }),
 })
 
 export default function SignIn() {
@@ -38,6 +47,10 @@ export default function SignIn() {
         title: "Let's Go!",
         description: "Enjoy your session",
       })
+
+      setTimeout(() => {
+        window.location.href = "/minigames"
+      }, 500)
     },
   })
 
@@ -54,50 +67,64 @@ export default function SignIn() {
   }
 
   return (
-    <div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    className="w-full"
-                    placeholder="Enter your email"
-                    type="email"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+    <div className="w-full grid grid-cols-2 h-screen">
+      <span className="w-full bg-[url('/static/image/sign-in.png')] bg-cover bg-no-repeat bg-left" />
+      <div className="w-full h-full flex items-center justify-center">
+        <Card className="w-full mx-32">
+          <CardHeader>
+            <CardTitle className="font-alagard text-4xl">Sign-in</CardTitle>
+          </CardHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <CardContent>
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          className="w-full"
+                          placeholder="Enter your email"
+                          type="email"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    className="w-full"
-                    placeholder="Enter your password"
-                    type="password"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          className="w-full"
+                          placeholder="Enter your password"
+                          type="password"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
 
-          <Button type="submit">Sign In</Button>
-        </form>
-      </Form>
+              <CardFooter>
+                <Button type="submit" className="font-alagard">
+                  Let me in!
+                </Button>
+              </CardFooter>
+            </form>
+          </Form>
+        </Card>
+      </div>
     </div>
   )
 }
