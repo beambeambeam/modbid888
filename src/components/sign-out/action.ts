@@ -1,15 +1,17 @@
 "use server"
 
 import { redirect } from "next/navigation"
-import { createServerAction } from "zsa"
 
 import { invalidateSession, validateRequest } from "~/auth"
+import { authenticatedAction } from "~/lib/safe-action"
 
-export const signOutAction = createServerAction().handler(async () => {
-  const { session } = await validateRequest()
-  if (!session) {
-    redirect("/sign-in")
-  }
-  await invalidateSession(session.id)
-  redirect("/")
-})
+export const signOutAction = authenticatedAction
+  .createServerAction()
+  .handler(async () => {
+    const { session } = await validateRequest()
+    if (!session) {
+      redirect("/sign-in")
+    }
+    await invalidateSession(session.id)
+    redirect("/")
+  })

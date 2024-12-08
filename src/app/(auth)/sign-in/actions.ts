@@ -1,5 +1,6 @@
 "use server"
 
+import { cookies } from "next/headers"
 import { z } from "zod"
 
 import { getUserByEmail, verifyPassword } from "~/data-access/users"
@@ -17,8 +18,11 @@ export const signInAction = unauthenticatedAction
     })
   )
   .handler(async ({ input }) => {
+    await cookies()
+
     await rateLimitByIp({ key: input.email, limit: 3, window: 30000 })
     const user = await signInUserUseCase(input.email, input.password)
+
     await setSession(user.id)
   })
 
