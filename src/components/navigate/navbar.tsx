@@ -20,7 +20,7 @@ async function Navbar() {
         </Link>
         <div className="flex flex-row gap-4 items-center">
           <HoverCard>
-            <HoverCardTrigger href="/profile">
+            <HoverCardTrigger href="/profile" className="hover:underline">
               <div className="w-fit flex flex-row font-alagard text-lg items-center cursor-pointer">
                 <p>{data?.displayName}</p>
                 <p>#</p>
@@ -29,7 +29,7 @@ async function Navbar() {
             </HoverCardTrigger>
             <HoverCardContent>
               <Card>
-                <p className="font-alagard text-xl p-2">{balance}</p>
+                <p className="font-alagard text-xl p-2">balance : {balance}</p>
               </Card>
             </HoverCardContent>
           </HoverCard>

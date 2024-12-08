@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
+import NumberFlow from "@number-flow/react"
 
 import { Button } from "~/components/ui/button"
 import { cn } from "~/lib/utils"
@@ -268,7 +269,9 @@ const RouletteGame: React.FC = () => {
     <div className="flex flex-row p-4">
       <div style={{ flex: 1, borderRight: "2px solid #ccc", padding: "20px" }}>
         <h1>Betting Area</h1>
-        <h2>Balance: ${balance}</h2>
+        <h2>
+          Balance: <NumberFlow value={balance} />
+        </h2>
 
         <div>
           <label>Bet Amount: </label>

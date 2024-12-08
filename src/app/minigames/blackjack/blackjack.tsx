@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
+import NumberFlow from "@number-flow/react"
 import { useServerAction } from "zsa-react"
 
 import { betTransaction } from "~/hooks/bet/actions"
@@ -164,7 +165,9 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
       <h1 className="text-4xl font-bold">Blackjack</h1>
       <h1>win: {multiplier}</h1>
       <div className="my-4">
-        <h3 className="text-xl">Your Money: ${playerMoney}</h3>
+        <h3 className="text-xl">
+          Your Money: <NumberFlow value={playerMoney} />
+        </h3>
         <input
           type="number"
           value={bet}
