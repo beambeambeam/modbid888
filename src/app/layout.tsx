@@ -3,6 +3,7 @@ import localFont from "next/font/local"
 
 import Provider from "~/components/providers/app-provider"
 import { ThemeProvider } from "~/components/providers/theme-provider"
+import { TailwindIndicator } from "~/components/tailwind-indicator"
 import { Toaster } from "~/components/ui/toaster"
 
 import "~/styles/globals.css"
@@ -43,6 +44,7 @@ export default function RootLayout({
           >
             <main className="font-geist">{children}</main>
             <Toaster />
+            <TailwindIndicator />
           </ThemeProvider>
         </body>
       </Provider>
