@@ -1,5 +1,6 @@
 "use server"
 
+import { cookies } from "next/headers"
 import { animals, colors, uniqueNamesGenerator } from "unique-names-generator"
 import { z } from "zod"
 
@@ -26,6 +27,7 @@ export const signUpAction = unauthenticatedAction
   })
 
 export async function registerUserUseCase(email: string, password: string) {
+  await cookies()
   const existingUser = await getUserByEmail(email)
   if (existingUser) {
     throw new PublicError("An user with that email already exists.")
@@ -35,7 +37,7 @@ export async function registerUserUseCase(email: string, password: string) {
 
   const displayName = uniqueNamesGenerator({
     dictionaries: [colors, animals],
-    separator: " ",
+    separator: "_",
     style: "capital",
   })
   await createProfile(user.id, displayName)
