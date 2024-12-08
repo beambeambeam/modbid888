@@ -161,31 +161,36 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
   }
 
   return (
-    <div className="text-center">
-      <h1 className="text-4xl font-bold">Blackjack</h1>
-      <h1>win: {multiplier}</h1>
+    <div className="w-full flex flex-col">
+      <h1 className="text-4xl font-alagard font-normal">Blackjack</h1>
+      <h1>win : {multiplier}</h1>
       <div className="my-4">
         <h3 className="text-xl">
           Your Money: <NumberFlow value={playerMoney} />
         </h3>
-        <input
-          type="number"
-          value={bet}
-          onChange={(e) => setBet(e.target.value)}
-          placeholder="Enter Bet"
-          disabled={isGameRunning}
-          className="text-lg px-4 py-2 border border-gray-300 rounded mr-2"
-        />
-        <button
-          onClick={startGame}
-          disabled={isGameRunning}
-          className="text-lg px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Start Game
-        </button>
+        {!isGameRunning && (
+          <>
+            <input
+              type="number"
+              value={bet}
+              onChange={(e) => setBet(e.target.value)}
+              placeholder="Enter Bet"
+              disabled={isGameRunning}
+              className="text-lg px-4 py-2 border border-gray-300 rounded mr-2"
+            />
+            <button
+              onClick={startGame}
+              disabled={isGameRunning}
+              className="text-lg px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Start Game
+            </button>
+          </>
+        )}
       </div>
+
       <div className="my-4">
-        <h2 className="text-2xl">Player&#39;s Hand</h2>
+        <h2 className="text-2xl font-alagard">Player&#39;s Hand</h2>
         <div>
           {player.hand.map((card, i) => (
             <span key={i} className="text-lg">
@@ -194,23 +199,27 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
           ))}
         </div>
         <p className="text-xl">Score: {player.score}</p>
-        <button
-          onClick={() => drawCard(player, setPlayer)}
-          disabled={gameOver}
-          className="text-lg px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-        >
-          Hit
-        </button>
-        <button
-          onClick={handleStand}
-          disabled={gameOver}
-          className="text-lg px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 ml-2"
-        >
-          Stand
-        </button>
+        {isGameRunning && (
+          <>
+            <button
+              onClick={() => drawCard(player, setPlayer)}
+              disabled={gameOver}
+              className="text-lg px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            >
+              Hit
+            </button>
+            <button
+              onClick={handleStand}
+              disabled={gameOver}
+              className="text-lg px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 ml-2"
+            >
+              Stand
+            </button>
+          </>
+        )}
       </div>
       <div className="my-4">
-        <h2 className="text-2xl">Dealer&#39;s Hand</h2>
+        <h2 className="text-2xl font-alagard">Dealer&#39;s Hand</h2>
         <div>
           {dealer.hand.map((card, i) => {
             if (i === 0 && !dealerRevealed) {
@@ -234,7 +243,7 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
             : calculateDealerVisibleScore(dealer.hand)}
         </p>
       </div>
-      {gameOver && <h2 className="text-2xl">{renderResult()}</h2>}
+      {gameOver && <h2 className="text-4xl font-alagard">{renderResult()}</h2>}
     </div>
   )
 }
