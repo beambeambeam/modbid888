@@ -2,6 +2,9 @@
 
 import React, { useState } from "react"
 
+import { Button } from "~/components/ui/button"
+import { cn } from "~/lib/utils"
+
 type BetType =
   | "1 Number"
   | "High"
@@ -262,14 +265,7 @@ const RouletteGame: React.FC = () => {
   }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        padding: "20px",
-        fontFamily: "Arial, sans-serif",
-      }}
-    >
+    <div className="flex flex-row p-4">
       <div style={{ flex: 1, borderRight: "2px solid #ccc", padding: "20px" }}>
         <h1>Betting Area</h1>
         <h2>Balance: ${balance}</h2>
@@ -287,17 +283,18 @@ const RouletteGame: React.FC = () => {
         </div>
 
         {/* Bet Type Selection */}
-        <div>
-          <p>Select a type of bet:</p>
-          <div>
+        <div className="flex flex-col gap-2 mb-4">
+          <p className="font-alagard">Select a type of bet:</p>
+          <div className="flex flex-wrap gap-2">
             {Object.keys(payouts).map((type) => (
-              <button
+              <Button
+                variant="outline"
                 key={type}
                 onClick={() => setSelectedBetType(type as BetType)}
-                className={`py-2 px-4 border ${selectedBetType === type ? "bg-green-500" : "bg-white"}`}
+                className={`py-2 px-4 border ${selectedBetType === type && "ring-red-500 ring"} text-foreground`}
               >
                 {type} ({payouts[type as BetType]}x)
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -311,18 +308,18 @@ const RouletteGame: React.FC = () => {
             <p>Zone3 : 25-36</p>
             <div style={{ display: "flex", gap: "10px" }}>
               {[1, 2, 3].map((zone) => (
-                <button
+                <Button
+                  variant="ghost"
                   key={zone}
                   onClick={() => setSelectedNumber(zone)}
-                  style={{
-                    padding: "10px",
-                    backgroundColor: selectedNumber === zone ? "blue" : "white",
-                    border: "2px solid #888",
-                    cursor: "pointer",
-                  }}
+                  className={cn(
+                    "py-2 px-4 border",
+                    selectedNumber === zone && "ring-red-500 ring",
+                    "border-gray-500 cursor-pointer"
+                  )}
                 >
                   Zone {zone}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
@@ -336,19 +333,19 @@ const RouletteGame: React.FC = () => {
             <p>Row2 : 2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35</p>
             <p>Row3 : 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36</p>
             <div style={{ display: "flex", gap: "10px" }}>
-              {[1, 2, 3].map((row) => (
-                <button
-                  key={row}
-                  onClick={() => setSelectedNumber(row)}
-                  style={{
-                    padding: "10px",
-                    backgroundColor: selectedNumber === row ? "blue" : "white",
-                    border: "2px solid #888",
-                    cursor: "pointer",
-                  }}
+              {[1, 2, 3].map((zone) => (
+                <Button
+                  variant="ghost"
+                  key={zone}
+                  onClick={() => setSelectedNumber(zone)}
+                  className={cn(
+                    "py-2 px-4 border",
+                    selectedNumber === zone && "ring-red-500 ring",
+                    "border-gray-500 cursor-pointer"
+                  )}
                 >
-                  Row {row}
-                </button>
+                  Zone {zone}
+                </Button>
               ))}
             </div>
           </div>
@@ -363,24 +360,17 @@ const RouletteGame: React.FC = () => {
             <p>Select numbers based on the bet type:</p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
               {numbers.map((num) => (
-                <button
+                <Button
+                  variant="outline"
                   key={num}
                   onClick={() => handleNumberSelection(num)}
-                  style={{
-                    padding: "15px",
-                    width: "50px",
-                    height: "50px",
-                    borderRadius: "50%",
-                    backgroundColor: selectedNumbers.has(num)
-                      ? "blue"
-                      : "white",
-                    border: "2px solid #888",
-                    cursor: "pointer",
-                    fontSize: "16px",
-                  }}
+                  className={cn(
+                    "p-4 w-12 h-12 rounded-full cursor-pointer text-lg text-foreground",
+                    selectedNumbers.has(num) && "ring-red-500 ring"
+                  )}
                 >
                   {num}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
@@ -395,22 +385,17 @@ const RouletteGame: React.FC = () => {
             </h1>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
               {numbers.map((num) => (
-                <button
+                <Button
+                  variant="outline"
                   key={num}
                   onClick={() => handleNumberSelection(num)}
-                  style={{
-                    padding: "15px",
-                    width: "50px",
-                    height: "50px",
-                    borderRadius: "50%",
-                    backgroundColor: selectedNumber === num ? "blue" : "white",
-                    border: "2px solid #888",
-                    cursor: "pointer",
-                    fontSize: "16px",
-                  }}
+                  className={cn(
+                    "p-4 w-12 h-12 rounded-full cursor-pointer text-lg text-foreground bg-background",
+                    selectedNumber === num && "ring-red-500 ring"
+                  )}
                 >
                   {num}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
@@ -430,6 +415,7 @@ const RouletteGame: React.FC = () => {
             position: "relative",
             overflow: "hidden",
           }}
+          className="bg-background ring-white ring-inset ring-[1.7rem]"
         >
           <div
             style={{
@@ -480,23 +466,25 @@ const RouletteGame: React.FC = () => {
             }}
           />
         </div>
-        <button
+        <Button
           onClick={spinRoulette}
-          style={{
-            marginTop: "20px",
-            padding: "10px 20px",
-            backgroundColor: "red",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-          disabled={isSpinning}
+          className="mt-5 px-5 py-2.5  border-none rounded cursor-pointer disabled:opacity-50 bg-red-500 hover:bg-red-400 text-white font-alagard text-xl"
+          disabled={
+            isSpinning ||
+            !selectedBetType ||
+            (selectedBetType === "1 Number" && selectedNumber === null) ||
+            (["2 Numbers", "3 Numbers", "4 Numbers", "6 Numbers"].includes(
+              selectedBetType
+            ) &&
+              selectedNumbers.size === 0)
+          }
         >
           Spin the Wheel
-        </button>
+        </Button>
         {/* แสดงหมายเลขที่ชนะ */}
-        <h2>The winning number is: {result !== null ? result : "-"}</h2>
+        <h2 className="text-xl">
+          The winning number is: {result !== null ? result : "-"}
+        </h2>
 
         {/* แสดงข้อความชนะหรือแพ้ */}
         <h3>{message}</h3>
