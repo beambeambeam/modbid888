@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation"
 
 import Banner from "~/components/banner"
-import Navbar from "~/components/navbar"
+import Navbar from "~/components/navigate/navbar"
 import { env } from "~/env"
 import { isAllowRole } from "~/lib/roles"
 

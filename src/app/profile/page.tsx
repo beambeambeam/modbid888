@@ -98,7 +98,9 @@ function Display({ displayName, role, userId, balance }: DisplayProps) {
           <p>#</p>
           <p>{userId}</p>
         </div>
-        <div className={`${cn(balance < -1 ? "text-red-500" : "text-white")}`}>
+        <div
+          className={`${cn(balance < -1 ? "text-red-500" : "text-white")} font-normal`}
+        >
           {balance}
         </div>
       </CardTitle>
