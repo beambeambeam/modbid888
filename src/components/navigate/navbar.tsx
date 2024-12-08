@@ -1,5 +1,15 @@
 import Link from "next/link"
 import { HoverCardContent } from "@radix-ui/react-hover-card"
+import { MenuIcon } from "lucide-react"
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu"
 
 import Logout from "../sign-out"
 import ModeTogger from "../toggle-mode"
@@ -18,7 +28,7 @@ async function Navbar() {
         <Link href="/minigames">
           <h1 className="font-alagard text-3xl">Modbid888</h1>
         </Link>
-        <div className="flex flex-row gap-4 items-center">
+        <div className="flex flex-row gap-4 items-center sm:visible invisible">
           <HoverCard>
             <HoverCardTrigger href="/profile" className="hover:underline">
               <div className="w-fit flex flex-row font-alagard text-lg items-center cursor-pointer">
@@ -35,6 +45,29 @@ async function Navbar() {
           </HoverCard>
           <Logout />
           <ModeTogger />
+        </div>
+        <div className="sm:hidden visible">
+          <DropdownMenu>
+            <DropdownMenuTrigger className="cursor-pointer">
+              <MenuIcon />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuLabel>Options</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <Link href="/profile">Profile</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link href="/minigames">Minigames</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Logout />
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <ModeTogger />
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       <Separator />

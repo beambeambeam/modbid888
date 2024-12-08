@@ -16,7 +16,7 @@ const MINIGAMES: GameCardProps[] = [
 
 function MinigamesPage() {
   return (
-    <div className="w-full h-full flex items-center justify-center gap-2">
+    <div className="w-full h-full flex items-center justify-center gap-2 flex-col lg:flex-row">
       {MINIGAMES.map((value) => (
         <div key={value.title}>
           <GameCard {...value} />
