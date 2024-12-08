@@ -45,8 +45,11 @@ function LeaderboardPage() {
 
   return (
     <div className="w-full h-screen flex flex-col gap-11 justify-center items-center">
-      <div className="flex flex-col gap-11 justify-center w-[50vw]">
-        <h1 className="font-alagard text-5xl">Leaderboard</h1>
+      <div className="flex flex-col gap-11 justify-center w-full lg:w-[90vw] lg:px-0 px-10">
+        <div>
+          <h1 className="font-alagard text-5xl">Leaderboard</h1>
+          <p className="text-muted-foreground">Are you on the top?</p>
+        </div>
         <DataTable columns={columns} data={data} />
         <div className="w-full flex flex-row justify-end gap-4">
           <Link href="/sign-in">
