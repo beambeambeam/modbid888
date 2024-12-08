@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { redirect } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -56,6 +57,7 @@ export default function SignUp() {
         title: "Let's Go!",
         description: "Enjoy your session",
       })
+      redirect("/minigames/first-time")
     },
   })
 
