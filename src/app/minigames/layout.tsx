@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation"
 
+import Banner from "~/components/banner"
+import Navbar from "~/components/navigate/navbar"
 import { env } from "~/env"
 import { isAllowRole } from "~/lib/roles"
 
@@ -14,5 +16,11 @@ export default async function MinigameLayout({
     return redirect("/")
   }
 
-  return <>{children}</>
+  return (
+    <div className="h-screen w-full flex flex-col">
+      <Banner />
+      <Navbar />
+      {children}
+    </div>
+  )
 }

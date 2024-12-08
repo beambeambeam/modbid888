@@ -1,7 +1,26 @@
-export default async function MinigameLayout({
+import { redirect } from "next/navigation"
+
+import Banner from "~/components/banner"
+import Navbar from "~/components/navigate/navbar"
+import { env } from "~/env"
+import { isAllowRole } from "~/lib/roles"
+
+export default async function ProfileLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  return <>{children}</>
+  if (
+    !(await isAllowRole(["admin", "member"], env.NODE_ENV === "development"))
+  ) {
+    return redirect("/")
+  }
+
+  return (
+    <div className="h-screen w-full flex flex-col">
+      <Banner />
+      <Navbar />
+      {children}
+    </div>
+  )
 }

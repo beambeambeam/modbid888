@@ -35,13 +35,13 @@ const values = [
 
 type BlackjackGameProps = {
   balance: number
-  multiplier: number
   minigameId: number
 }
 
+const multiplier = 1.8
+
 const BlackjackGame: React.FC<BlackjackGameProps> = ({
   balance,
-  multiplier,
   minigameId,
 }) => {
   const [player, setPlayer] = useState<Player>({ hand: [], score: 0 })

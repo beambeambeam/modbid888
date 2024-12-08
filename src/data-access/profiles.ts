@@ -1,3 +1,4 @@
+import { cache } from "react"
 import { desc, eq } from "drizzle-orm"
 
 import { database } from "~/db"
@@ -84,4 +85,28 @@ export async function getTop10Balance() {
     orderBy: [desc(profiles.balance)],
   })
   return top10
+}
+
+export const getProfileDisplayName = cache(async (userId: UserId) => {
+  const profile = await database.query.profiles.findFirst({
+    where: eq(profiles.userId, userId),
+  })
+
+  if (!profile) {
+    throw NotFoundError
+  }
+
+  return { displayName: profile.displayName, id: profile.userId }
+})
+
+export async function getBalanceByUserId(userId: UserId) {
+  const profile = await database.query.profiles.findFirst({
+    where: eq(profiles.userId, userId),
+  })
+
+  if (!profile) {
+    throw NotFoundError
+  }
+
+  return profile.balance
 }

@@ -9,13 +9,12 @@ import { UserId } from "~/types"
 
 const SESSION_COOKIE_NAME = "session"
 
-const cookieStore = cookies()
-
 export async function setSessionTokenCookie(
   token: string,
   expiresAt: Date
 ): Promise<void> {
-  ;(await cookieStore).set(SESSION_COOKIE_NAME, token, {
+  const cookieStore = await cookies()
+  cookieStore.set(SESSION_COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
@@ -49,7 +48,8 @@ export const getCurrentUser = cache(async () => {
 })
 
 export async function deleteSessionTokenCookie(): Promise<void> {
-  ;(await cookieStore).set(SESSION_COOKIE_NAME, "", {
+  const cookieStore = await cookies()
+  cookieStore.set(SESSION_COOKIE_NAME, "", {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",

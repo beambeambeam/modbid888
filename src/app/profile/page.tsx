@@ -1,15 +1,35 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { ColumnDef } from "@tanstack/react-table"
+import { ArrowUpDown } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useServerAction } from "zsa-react"
 
 import getUserProfile, {
+  getBetlogsAction,
   updateDisplayNameAction,
   updatePasswordAction,
 } from "~/app/profile/actions"
-import { Button } from "~/components/ui/button"
+import { DataTable } from "~/components/table/data-table"
+import { Button, buttonVariants } from "~/components/ui/button"
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog"
 import {
   Form,
   FormControl,
@@ -22,6 +42,8 @@ import {
 import { Input } from "~/components/ui/input"
 import { useServerActionQuery } from "~/hooks/server-action-hooks"
 import { useToast } from "~/hooks/use-toast"
+import { cn } from "~/lib/utils"
+import { ArrayElement } from "~/types"
 
 function ProfilePage() {
   const { data, isError } = useServerActionQuery(getUserProfile, {
@@ -34,10 +56,27 @@ function ProfilePage() {
   }
 
   return (
-    <div>
-      <Display {...data} />
-      <ChangeDisplayName displayName={data.displayName} />
-      <ChangePassword />
+    <div className="w-full grid grid-cols-2 h-full">
+      <div className="w-full h-full flex items-center justify-center">
+        <Card className="w-full mx-20">
+          <CardHeader>
+            <Display {...data} />
+          </CardHeader>
+          <CardFooter className="flex flex-row gap-3">
+            <ChangePassword />
+            <ChangeDisplayName displayName={data.displayName} />
+          </CardFooter>
+        </Card>
+      </div>
+      <div className="w-full h-full flex justify-center flex-col items-center gap-6 px-5">
+        <div className="flex flex-col w-full">
+          <h1 className="text-4xl font-alagard text-start w-full">Bet logs.</h1>
+          <p className="text-muted-foreground text-xl text-start w-full">
+            Let&apos;s get in to some statistics
+          </p>
+        </div>
+        <BetlogsTable />
+      </div>
     </div>
   )
 }
@@ -47,15 +86,26 @@ type DisplayProps = {
   role: "member" | "admin"
   userId: number
   displayName: string
+  balance: number
 }
 
-function Display({ displayName, role, userId }: DisplayProps) {
+function Display({ displayName, role, userId, balance }: DisplayProps) {
   return (
-    <div>
-      <p>{displayName}</p>
-      <p>{userId}</p>
-      <p>{role}</p>
-    </div>
+    <>
+      <CardTitle className="w-full flex flex-row font-alagard text-3xl items-center justify-between">
+        <div className="flex flex-row font-normal">
+          <p>{displayName}</p>
+          <p>#</p>
+          <p>{userId}</p>
+        </div>
+        <div
+          className={`${cn(balance < -1 ? "text-red-500" : "text-white")} font-normal`}
+        >
+          {balance}
+        </div>
+      </CardTitle>
+      <CardDescription className="font-alagard text-xl">{role}</CardDescription>
+    </>
   )
 }
 
@@ -83,32 +133,47 @@ function ChangeDisplayName({ displayName }: { displayName: string }) {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <FormField
-          control={form.control}
-          name="newDisplayName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Username</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button
-          type="submit"
-          disabled={form.getValues().newDisplayName == displayName}
-        >
-          Submit
-        </Button>
-      </form>
-    </Form>
+    <Dialog>
+      <DialogTrigger className={buttonVariants({ variant: "outline" })}>
+        Change Display Name
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Edit profile</DialogTitle>
+          <DialogDescription>
+            Make changes to your profile here. Click save when you&apos;re done.
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              control={form.control}
+              name="newDisplayName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    This is your public display name.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <Button
+                type="submit"
+                disabled={form.getValues().newDisplayName == displayName}
+              >
+                Submit
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
   )
 }
 
@@ -159,51 +224,179 @@ function ChangePassword() {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <FormField
-          control={form.control}
-          name="oldPassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Old Password</FormLabel>
-              <FormControl>
-                <Input type="password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="newPassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>New Password</FormLabel>
-              <FormControl>
-                <Input type="password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="newPasswordAgain"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Repeat New Password</FormLabel>
-              <FormControl>
-                <Input type="password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+    <Dialog>
+      <DialogTrigger className={buttonVariants({ variant: "outline" })}>
+        Change Password
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Change Password</DialogTitle>
+          <DialogDescription>
+            Enter your old password and new password. Click submit when
+            you&apos;re done.
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              control={form.control}
+              name="oldPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Old Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="newPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>New Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="newPasswordAgain"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Repeat New Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                  <FormDescription>Must be the same on top</FormDescription>
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <Button type="submit">Submit</Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
   )
+}
+
+function BetlogsTable() {
+  const { data } = useServerActionQuery(getBetlogsAction, {
+    queryKey: ["betlogs"],
+    input: undefined,
+  })
+
+  if (!data) {
+    return null
+  }
+
+  const columns: ColumnDef<ArrayElement<NonNullable<typeof data>>>[] = [
+    {
+      accessorKey: "minigame",
+      cell: ({ row }) => {
+        return <p className="capitalize">{row.original.minigame}</p>
+      },
+    },
+    {
+      accessorKey: "betAmount",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Bet Amount
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell(props) {
+        return (
+          <p className="w-full text-center">
+            {props.row.getValue("betAmount")}
+          </p>
+        )
+      },
+    },
+    {
+      accessorKey: "betResult",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Bet Results
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell(props) {
+        return (
+          <p className="w-full text-center">
+            {props.row.getValue("betAmount")}
+          </p>
+        )
+      },
+    },
+    {
+      accessorKey: "profit",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Profit
+            <ArrowUpDown className="h-4 w-4" />
+          </Button>
+        )
+      },
+      cell(props) {
+        return (
+          <p className="w-full text-center">
+            {props.row.getValue("betAmount")}
+          </p>
+        )
+      },
+    },
+    {
+      accessorKey: "timestamp",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Timestamp
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => {
+        const date = row.original.timestamp
+        return (
+          <p>
+            {date.getDate().toString().padStart(2, "0")}/
+            {(date.getMonth() + 1).toString().padStart(2, "0")}/
+            {date.getFullYear()} {date.getHours().toString().padStart(2, "0")}:
+            {date.getMinutes().toString().padStart(2, "0")}:
+            {date.getSeconds().toString().padStart(2, "0")}
+          </p>
+        )
+      },
+    },
+  ]
+
+  return <DataTable columns={columns} data={data} pagination sort />
 }
 
 export default ProfilePage

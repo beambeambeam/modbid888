@@ -5,7 +5,7 @@ import { z } from "zod"
 
 import { invalidateSession, validateRequest } from "~/auth"
 import { updatePassword } from "~/data-access/accounts"
-import { userChangeLogs } from "~/data-access/logs"
+import { getBetLogWithMinigamenames, userChangeLogs } from "~/data-access/logs"
 import { getProfile, updateProfile } from "~/data-access/profiles"
 import { verifyPassword } from "~/data-access/users"
 import { createTransaction } from "~/data-access/utils"
@@ -61,4 +61,10 @@ export const updatePasswordAction = authenticatedAction
     }
     await invalidateSession(session.id)
     redirect("/")
+  })
+
+export const getBetlogsAction = authenticatedAction
+  .createServerAction()
+  .handler(async ({ ctx }) => {
+    return await getBetLogWithMinigamenames(ctx.user.id)
   })
