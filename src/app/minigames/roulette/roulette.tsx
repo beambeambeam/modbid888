@@ -266,8 +266,8 @@ const RouletteGame: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-row p-4">
-      <div style={{ flex: 1, borderRight: "2px solid #ccc", padding: "20px" }}>
+    <div className="flex-col-reverse lg:grid-cols-2 p-4 flex lg:grid">
+      <div className="flex-1 p-5">
         <h1>Betting Area</h1>
         <h2>
           Balance: <NumberFlow value={balance} />
@@ -406,8 +406,8 @@ const RouletteGame: React.FC = () => {
       </div>
 
       {/* Roulette Wheel */}
-      <div style={{ flex: 2, textAlign: "center" }}>
-        <h1>Roulette Wheel</h1>
+      <div className="flex-2 text-center">
+        <h1 className="font-alagard text-3xl">Roulette Wheel</h1>
         <div
           style={{
             margin: "20px auto",
