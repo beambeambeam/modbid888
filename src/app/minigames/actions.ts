@@ -1,3 +1,5 @@
+"use server"
+
 import { z } from "zod"
 
 import { getTop3MinigameById } from "~/data-access/logs"

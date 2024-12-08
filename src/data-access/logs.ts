@@ -2,7 +2,7 @@ import { desc, eq } from "drizzle-orm"
 import { nanoid } from "nanoid"
 
 import { database } from "~/db"
-import { betLogs, minigames, NewBetLog, userLogs } from "~/db/schema"
+import { betLogs, minigames, NewBetLog, profiles, userLogs } from "~/db/schema"
 import { MinigameId, UserId } from "~/types"
 
 export async function userChangeLogs(userId: UserId, action: string) {
@@ -22,11 +22,18 @@ export async function betLog(action: NewBetLog) {
 }
 
 export async function getTop3MinigameById(minigameId: MinigameId) {
-  return await database.query.betLogs.findMany({
-    where: eq(betLogs.minigamesId, minigameId),
-    orderBy: [desc(betLogs.profit)],
-    limit: 3,
-  })
+  return await database
+    .select({
+      userId: profiles.userId,
+      displayName: profiles.displayName,
+      betAmount: betLogs.betAmount,
+      profit: betLogs.profit,
+    })
+    .from(betLogs)
+    .where(eq(betLogs.minigamesId, minigameId))
+    .innerJoin(profiles, eq(profiles.userId, betLogs.userId))
+    .orderBy(desc(betLogs.profit))
+    .limit(3)
 }
 
 export async function getBetLogWithMinigamenames(userId: UserId) {
