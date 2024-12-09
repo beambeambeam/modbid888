@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { EyeIcon, EyeOffIcon } from "lucide-react"
+import { Eye, EyeOff } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useServerAction } from "zsa-react"
@@ -70,9 +70,10 @@ export default function SignIn() {
     execute(data)
   }
 
-  const [seePassword, setSeePassword] = useState<"text" | "password">(
-    "password"
-  )
+  const [isVisible, setIsVisible] = useState<boolean>(false)
+  const toggleVisibility = () => setIsVisible((prevState) => !prevState)
+
+  const [password, setPassword] = useState("")
 
   return (
     <div className="w-full grid-cols-1 grid xl:grid-cols-2 h-screen">
@@ -111,29 +112,43 @@ export default function SignIn() {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <div className="flex flex-row gap-2">
+                        <div className="relative">
                           <Input
                             {...field}
-                            className="w-full"
+                            className="pe-9"
                             placeholder="Enter your password"
-                            type={seePassword}
+                            type={isVisible ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => {
+                              field.onChange(e)
+                              setPassword(e.target.value)
+                            }}
+                            aria-describedby="password-strength"
                           />
-                          <Button
+                          <button
+                            className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                             type="button"
-                            size="icon"
-                            variant="outline"
-                            onClick={() =>
-                              setSeePassword((prev) =>
-                                prev === "password" ? "text" : "password"
-                              )
+                            onClick={toggleVisibility}
+                            aria-label={
+                              isVisible ? "Hide password" : "Show password"
                             }
+                            aria-pressed={isVisible}
+                            aria-controls="password"
                           >
-                            {seePassword === "password" ? (
-                              <EyeOffIcon />
+                            {isVisible ? (
+                              <EyeOff
+                                size={16}
+                                strokeWidth={2}
+                                aria-hidden="true"
+                              />
                             ) : (
-                              <EyeIcon />
+                              <Eye
+                                size={16}
+                                strokeWidth={2}
+                                aria-hidden="true"
+                              />
                             )}
-                          </Button>
+                          </button>
                         </div>
                       </FormControl>
                       <FormMessage />
