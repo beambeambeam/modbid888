@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm"
+import { and, desc, eq } from "drizzle-orm"
 import { nanoid } from "nanoid"
 
 import { database } from "~/db"
@@ -28,9 +28,12 @@ export async function getTop3MinigameById(minigameId: MinigameId) {
       displayName: profiles.displayName,
       betAmount: betLogs.betAmount,
       profit: betLogs.profit,
+      role: profiles.role,
     })
     .from(betLogs)
-    .where(eq(betLogs.minigamesId, minigameId))
+    .where(
+      and(eq(betLogs.minigamesId, minigameId), eq(profiles.role, "member"))
+    )
     .innerJoin(profiles, eq(profiles.userId, betLogs.userId))
     .orderBy(desc(betLogs.profit))
     .limit(3)

@@ -82,6 +82,7 @@ export async function getTop10Balance() {
   const top10 = await database.query.profiles.findMany({
     limit: 10,
     orderBy: [desc(profiles.balance)],
+    where: eq(profiles.role, "member"),
   })
   return top10
 }

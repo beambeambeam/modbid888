@@ -341,9 +341,7 @@ function BetlogsTable() {
       },
       cell(props) {
         return (
-          <p className="w-full text-center">
-            {props.row.getValue("betAmount")}
-          </p>
+          <p className="w-full text-center">{props.row.getValue("profit")}</p>
         )
       },
     },
@@ -363,7 +361,7 @@ function BetlogsTable() {
       cell(props) {
         return (
           <p className="w-full text-center">
-            {props.row.getValue("betAmount")}
+            {props.row.original.betAmount + props.row.original.profit}
           </p>
         )
       },
