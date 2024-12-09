@@ -57,7 +57,7 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        alagard: ["alagard", "bitmap"],
+        alagard: ["var(--font-alagard)"],
         geist: ["var(--font-geist-sans)"],
       },
     },

@@ -19,6 +19,12 @@ const geistMono = localFont({
   weight: "100 900",
 })
 
+const alagardBitmap = localFont({
+  src: "./fonts/alagard.ttf",
+  variable: "--font-alagard",
+  weight: "500",
+})
+
 export const metadata: Metadata = {
   title: "Modbid888",
   description: "Best place for bid",
@@ -34,7 +40,7 @@ export default function RootLayout({
     <html lang="en">
       <Provider>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} ${alagardBitmap.variable} antialiased`}
         >
           <ThemeProvider
             attribute="class"
