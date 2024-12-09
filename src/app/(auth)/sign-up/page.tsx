@@ -83,7 +83,7 @@ export default function SignUp() {
 
   return (
     <div className="w-full grid-cols-1 grid xl:grid-cols-2 h-screen">
-      <span className="w-full bg-[url('/static/image/sign-up.png')] bg-cover bg-no-repeat bg-left xl:block hidden" />
+      <span className="w-full bg-[url('/static/image/sign-up.svg')] bg-cover bg-no-repeat bg-left xl:block hidden" />
       <div className="w-full h-full flex items-center justify-center">
         <Card className="w-full mx-14">
           <CardHeader>
