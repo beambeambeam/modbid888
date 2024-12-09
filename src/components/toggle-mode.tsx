@@ -3,19 +3,16 @@
 import { SunMoonIcon } from "lucide-react"
 import { useTheme } from "next-themes"
 
-import { Button } from "./ui/button"
-
 function ModeTogger() {
   const { setTheme, theme } = useTheme()
   return (
-    <Button
-      variant="outline"
-      size="icon"
+    <div
       onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-      className="p-0"
+      className="w-full flex items-center justify-start gap-2 cursor-pointer"
     >
       <SunMoonIcon className="size-6 text-foreground" />
-    </Button>
+      to {theme === "light" ? "dark" : "light"}
+    </div>
   )
 }
 export default ModeTogger
