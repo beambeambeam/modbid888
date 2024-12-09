@@ -10,8 +10,8 @@ export async function createProfile(userId: UserId, displayName: string) {
   const [profile] = await database
     .insert(profiles)
     .values({
-      userId,
-      displayName,
+      userId: userId,
+      displayName: displayName,
       balance: 10000,
     })
     .onConflictDoNothing()

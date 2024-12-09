@@ -12,7 +12,7 @@ export async function createAccount(userId: UserId, password: string) {
   const [account] = await database
     .insert(accounts)
     .values({
-      userId,
+      userId: userId,
       password: hash,
       salt,
     })
