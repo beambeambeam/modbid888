@@ -58,6 +58,7 @@ const config: Config = {
       },
       fontFamily: {
         alagard: ["alagard", "bitmap"],
+        geist: ["var(--font-geist-sans)"],
       },
     },
   },

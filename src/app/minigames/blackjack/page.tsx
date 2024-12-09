@@ -13,13 +13,14 @@ async function BlackjackPage() {
   }
 
   return (
-    <div className="w-full grid grid-cols-3">
-      <div></div>
-      <div className="flex flex-col">
+    <div className="w-full grid grid-cols-1 xl:grid-cols-3 h-screen">
+      <div className="flex flex-col col-span-2 items-center justify-start p-4">
         <Blackjack balance={balance} minigameId={1} />
+      </div>
+      <div className="w-full h-full flex items-center px-10 xl:px-0 flex-col justify-center gap-2">
+        <h1 className="w-full font-alagard text-xl">Top profit.</h1>
         <MinigameTable minigameId={1} />
       </div>
-      <div></div>
     </div>
   )
 }

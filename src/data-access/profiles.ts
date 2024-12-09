@@ -10,8 +10,8 @@ export async function createProfile(userId: UserId, displayName: string) {
   const [profile] = await database
     .insert(profiles)
     .values({
-      userId,
-      displayName,
+      userId: userId,
+      displayName: displayName,
       balance: 10000,
     })
     .onConflictDoNothing()
@@ -64,9 +64,8 @@ export async function updateBet(
   trx = database
 ) {
   const profile = await trx.query.profiles.findFirst({
-    where: eq(profiles.id, userId),
+    where: eq(profiles.userId, userId),
   })
-
   if (!profile) {
     throw NotFoundError
   }
@@ -83,6 +82,7 @@ export async function getTop10Balance() {
   const top10 = await database.query.profiles.findMany({
     limit: 10,
     orderBy: [desc(profiles.balance)],
+    where: eq(profiles.role, "member"),
   })
   return top10
 }

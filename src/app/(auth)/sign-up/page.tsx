@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { redirect } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -56,6 +57,7 @@ export default function SignUp() {
         title: "Let's Go!",
         description: "Enjoy your session",
       })
+      redirect("/minigames/first-time")
     },
   })
 
@@ -73,8 +75,8 @@ export default function SignUp() {
   }
 
   return (
-    <div className="w-full grid grid-cols-2 h-screen">
-      <span className="w-full bg-[url('/static/image/sign-up.png')] bg-cover bg-no-repeat bg-left" />
+    <div className="w-full grid-cols-1 grid xl:grid-cols-2 h-screen">
+      <span className="w-full bg-[url('/static/image/sign-up.png')] bg-cover bg-no-repeat bg-left xl:block hidden" />
       <div className="w-full h-full flex items-center justify-center">
         <Card className="w-full mx-32">
           <CardHeader>
