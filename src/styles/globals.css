@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: "alagard";
-  src: url("/fonts/alagard.tff");
-}
-
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
