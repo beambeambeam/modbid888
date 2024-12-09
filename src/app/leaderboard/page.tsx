@@ -7,6 +7,7 @@ import { DataTable } from "~/components/table/data-table"
 import { Button } from "~/components/ui/button"
 import { Profiles } from "~/db/schema"
 import { useServerActionQuery } from "~/hooks/server-action-hooks"
+import { formatNumberWithCommas } from "~/lib/utils"
 
 import { getLeaderboardAction } from "./action"
 
@@ -24,7 +25,9 @@ const columns: ColumnDef<Profiles>[] = [
     accessorKey: "balance",
     header: "Balance",
     cell: ({ row }) => (
-      <p className="font-alagard text-2xl">{row.original.balance}</p>
+      <p className="font-alagard text-2xl">
+        {formatNumberWithCommas(row.original.balance)}
+      </p>
     ),
   },
 ]

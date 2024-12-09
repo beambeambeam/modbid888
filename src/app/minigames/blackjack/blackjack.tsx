@@ -4,7 +4,10 @@ import React, { useState } from "react"
 import NumberFlow from "@number-flow/react"
 import { useServerAction } from "zsa-react"
 
+import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
 import { betTransaction } from "~/hooks/bet/actions"
+import { useToast } from "~/hooks/use-toast"
 
 type Card = {
   suit: string
@@ -53,6 +56,7 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
   const [bet, setBet] = useState<string>("")
   const [playerMoney, setPlayerMoney] = useState<number>(balance)
   const [isGameRunning, setIsGameRunning] = useState<boolean>(false)
+  const { toast } = useToast()
 
   const { execute: updateBet } = useServerAction(betTransaction)
 
@@ -76,7 +80,12 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
     if (playerMoney <= 0) {
       setBet("100")
     } else if (betAmount <= 0 || betAmount > playerMoney) {
-      alert("Please place a valid bet.")
+      toast({
+        title: "Invalid Bet",
+        description: "Please enter a valid bet amount.",
+        variant: "destructive",
+      })
+
       setIsGameRunning(false)
       return
     }
@@ -135,7 +144,7 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
         betResult: "win",
       })
       setPlayerMoney((prev) => prev + Number(bet) * multiplier)
-    } else {
+    } else if (player.score < dealer.score || player.score > 21) {
       updateBet({
         betAmount: Number(bet),
         minigameId: minigameId,
@@ -170,7 +179,7 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
         </h3>
         {!isGameRunning && (
           <>
-            <input
+            <Input
               type="number"
               value={bet}
               onChange={(e) => setBet(e.target.value)}
@@ -178,13 +187,9 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
               disabled={isGameRunning}
               className="text-lg px-4 py-2 border border-gray-300 rounded mr-2"
             />
-            <button
-              onClick={startGame}
-              disabled={isGameRunning}
-              className="text-lg px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
+            <Button onClick={startGame} disabled={isGameRunning}>
               Start Game
-            </button>
+            </Button>
           </>
         )}
       </div>
@@ -201,20 +206,19 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
         <p className="text-xl">Score: {player.score}</p>
         {isGameRunning && (
           <>
-            <button
+            <Button
               onClick={() => drawCard(player, setPlayer)}
-              disabled={gameOver}
-              className="text-lg px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+              disabled={gameOver || player.hand.length >= 3}
             >
               Hit
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="destructive"
               onClick={handleStand}
               disabled={gameOver}
-              className="text-lg px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 ml-2"
             >
               Stand
-            </button>
+            </Button>
           </>
         )}
       </div>
