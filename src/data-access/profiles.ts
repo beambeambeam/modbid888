@@ -64,9 +64,8 @@ export async function updateBet(
   trx = database
 ) {
   const profile = await trx.query.profiles.findFirst({
-    where: eq(profiles.id, userId),
+    where: eq(profiles.userId, userId),
   })
-
   if (!profile) {
     throw NotFoundError
   }
