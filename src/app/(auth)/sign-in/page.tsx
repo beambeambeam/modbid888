@@ -1,12 +1,15 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { EyeIcon, EyeOffIcon } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useServerAction } from "zsa-react"
 
 import { signInAction } from "~/app/(auth)/sign-in/actions"
+import { Spinner } from "~/components/spinner"
 import { Button } from "~/components/ui/button"
 import {
   Card,
@@ -35,7 +38,7 @@ const loginSchema = z.object({
 
 export default function SignIn() {
   const { toast } = useToast()
-  const { execute } = useServerAction(signInAction, {
+  const { execute, isPending } = useServerAction(signInAction, {
     onError({ err }) {
       toast({
         title: "Something went wrong",
@@ -67,11 +70,15 @@ export default function SignIn() {
     execute(data)
   }
 
+  const [seePassword, setSeePassword] = useState<"text" | "password">(
+    "password"
+  )
+
   return (
     <div className="w-full grid-cols-1 grid xl:grid-cols-2 h-screen">
       <span className="w-full bg-[url('/static/image/sign-in.png')] bg-cover bg-no-repeat bg-left xl:block hidden" />
       <div className="w-full h-full flex items-center justify-center">
-        <Card className="w-full mx-10">
+        <Card className="w-full mx-14">
           <CardHeader>
             <CardTitle className="font-alagard text-4xl">Sign-in</CardTitle>
           </CardHeader>
@@ -104,12 +111,30 @@ export default function SignIn() {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input
-                          {...field}
-                          className="w-full"
-                          placeholder="Enter your password"
-                          type="password"
-                        />
+                        <div className="flex flex-row gap-2">
+                          <Input
+                            {...field}
+                            className="w-full"
+                            placeholder="Enter your password"
+                            type={seePassword}
+                          />
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="outline"
+                            onClick={() =>
+                              setSeePassword((prev) =>
+                                prev === "password" ? "text" : "password"
+                              )
+                            }
+                          >
+                            {seePassword === "password" ? (
+                              <EyeOffIcon />
+                            ) : (
+                              <EyeIcon />
+                            )}
+                          </Button>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -118,10 +143,18 @@ export default function SignIn() {
               </CardContent>
 
               <CardFooter className="flex flex-row justify-between w-full items-center">
-                <Button className="font-alagard" type="submit">
-                  Let me in
+                <Button
+                  className="font-alagard"
+                  type="submit"
+                  disabled={isPending || !form.formState.isValid}
+                >
+                  {isPending ? (
+                    <Spinner className="text-background" />
+                  ) : (
+                    <p>Let me In!</p>
+                  )}
                 </Button>
-                <Link href="/sign-up  ">
+                <Link href="/sign-up">
                   <p className="text-sm text-muted-foreground cursor-pointer hover:underline">
                     don&apos;t have an account? click here!
                   </p>
