@@ -10,7 +10,6 @@ const MINIGAMES: GameCardProps[] = [
     title: "roulette",
     desc: "Roulette is a popular casino game where players bet on where a ball will land on a spinning wheel. The wheel features numbered pockets, and bets can be placed on specific numbers, colors, or number ranges.",
     img: "/static/image/minigames/roulette.svg",
-    disabled: true,
   },
 ]
 
