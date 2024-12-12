@@ -53,6 +53,7 @@
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "unique-names-generator": "^4.7.1",
+    "usehooks-ts": "^3.1.0",
     "zod": "^3.23.8",
     "zsa": "^0.6.0",
     "zsa-react": "^0.2.3",
