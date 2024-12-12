@@ -1,0 +1,66 @@
+body {
+    background: linear-gradient(to left,rgb(255, 195, 195),rgb(250, 243, 152));
+  }
+
+.wheel-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+  }
+  
+  .mod {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #007bff;
+  }
+
+  .coins {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  
+  .arrow {
+    font-size: 24px;
+    color: red;
+    position: absolute; /* Position relative to the wheel container */
+    top: 34%; /* Position it vertically at 25% from the top */
+    right: 40%; /* Move it outside the wheel on the right */
+    transform: rotate(90deg);
+  }
+
+  .wheel {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    position: relative;
+    border: 10px solid #000000;
+    border-radius: 60%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transition: transform 3s ease-out;
+  }
+  
+  button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+  }
+  .result {
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #007bff;
+  }
+  

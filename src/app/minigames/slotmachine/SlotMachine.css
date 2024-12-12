@@ -1,0 +1,35 @@
+body {
+    background: linear-gradient(to left,rgb(175, 245, 220),rgb(200, 236, 250));
+  }
+
+.slot-machine {
+    text-align: center;
+    font-family: Arial, sans-serif;
+  }
+  
+  .reels {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  
+  .message {
+    font-size: 1.5rem;
+    color: #007bff;
+  }
+  
+  button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+  }
+  
