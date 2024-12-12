@@ -1,10 +1,9 @@
 import { redirect } from "next/navigation"
 
 import Blackjack from "~/app/minigames/blackjack/blackjack"
+import MinigameTable from "~/app/minigames/table"
 import { Separator } from "~/components/ui/separator"
 import { getCurrentBalanceAction } from "~/hooks/bet/actions"
-
-import MinigameTable from "../table"
 
 async function BlackjackPage() {
   const [balance] = await getCurrentBalanceAction()

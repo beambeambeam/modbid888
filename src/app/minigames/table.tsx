@@ -37,7 +37,7 @@ function MinigameTable({ minigameId }: MinigameTableProps) {
     },
     {
       accessorKey: "betAmount",
-      header: "Balance",
+      header: "Bet Amount",
       cell: ({ row }) => (
         <p className="font-alagard text-xl">
           {formatNumberWithCommas(row.original.betAmount)}
@@ -45,7 +45,7 @@ function MinigameTable({ minigameId }: MinigameTableProps) {
       ),
     },
     {
-      accessorKey: "profit",
+      accessorKey: "Profit",
       cell: ({ row }) => (
         <p
           className={`font-alagard text-xl ${row.original.profit > 0 ? "text-green-500" : "text-red-500"}`}

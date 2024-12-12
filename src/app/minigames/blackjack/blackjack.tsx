@@ -53,7 +53,7 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
   const [deck, setDeck] = useState<Card[]>([])
   const [gameOver, setGameOver] = useState(false)
   const [dealerRevealed, setDealerRevealed] = useState(false)
-  const [bet, setBet] = useState<string>("")
+  const [bet, setBet] = useState<number>(0)
   const [playerMoney, setPlayerMoney] = useState<number>(balance)
   const [isGameRunning, setIsGameRunning] = useState<boolean>(false)
   const { toast } = useToast()
@@ -78,7 +78,7 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
     setIsGameRunning(true)
     const betAmount = Number(bet)
     if (playerMoney <= 0) {
-      setBet("100")
+      setBet(100)
     } else if (betAmount <= 0 || betAmount > playerMoney) {
       toast({
         title: "Invalid Bet",
@@ -178,19 +178,29 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
           Your Money: <NumberFlow value={playerMoney} />
         </h3>
         {!isGameRunning && (
-          <>
+          <div className="flex">
             <Input
               type="number"
               value={bet}
-              onChange={(e) => setBet(e.target.value)}
+              onChange={(e) => setBet(Number(e.target.value))}
               placeholder="Enter Bet"
               disabled={isGameRunning}
               className="text-lg px-4 py-2 border border-gray-300 rounded mr-2"
             />
-            <Button onClick={startGame} disabled={isGameRunning}>
-              Start Game
-            </Button>
-          </>
+            <div className="flex flex-row gap-2">
+              <Button onClick={startGame} disabled={isGameRunning}>
+                Start Game
+              </Button>
+              <Button
+                onClick={() => {
+                  setBet(playerMoney)
+                }}
+                disabled={isGameRunning}
+              >
+                All In
+              </Button>
+            </div>
+          </div>
         )}
       </div>
 
@@ -208,7 +218,7 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
           <>
             <Button
               onClick={() => drawCard(player, setPlayer)}
-              disabled={gameOver || player.hand.length >= 3}
+              disabled={gameOver || player.score > 21}
             >
               Hit
             </Button>

@@ -2,9 +2,13 @@
 
 import React, { useState } from "react"
 import NumberFlow from "@number-flow/react"
+import { useServerAction } from "zsa-react"
 
 import { Button } from "~/components/ui/button"
+import { betTransaction } from "~/hooks/bet/actions"
 import { cn } from "~/lib/utils"
+
+import MinigameTable from "../table"
 
 type BetType =
   | "1 Number"
@@ -21,7 +25,23 @@ type BetType =
   | "4 Numbers"
   | "6 Numbers"
 
-const RouletteGame: React.FC = () => {
+type RouletteProps = {
+  balance: number
+  minigameId: number
+}
+
+const blackNumbers = [
+  2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 27, 29, 31, 33, 35,
+]
+
+const redNumbers = [
+  1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36,
+]
+
+const RouletteGame: React.FC<RouletteProps> = ({
+  balance: dbBalance,
+  minigameId,
+}) => {
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null)
   const [selectedBetType, setSelectedBetType] = useState<BetType | null>(null)
   const [selectedNumbers, setSelectedNumbers] = useState<Set<number>>(new Set()) // For multiple number selections
@@ -29,11 +49,14 @@ const RouletteGame: React.FC = () => {
   const [rotation, setRotation] = useState<number>(0)
   const [isSpinning, setIsSpinning] = useState<boolean>(false)
   const [message, setMessage] = useState<string>("")
-  const [balance, setBalance] = useState<number>(1000) // Starting balance of 1000
+  const [balance, setBalance] = useState<number>(dbBalance)
   const [betAmount, setBetAmount] = useState<number>(10) // Default bet amount
+
   const [ballRotation] = useState<number>(0)
 
   const numbers = Array.from({ length: 37 }, (_, i) => i) // 0-36
+
+  const { execute: updateBet } = useServerAction(betTransaction)
 
   const payouts: Record<BetType, number> = {
     "1 Number": 35, // Pays 35x
@@ -55,6 +78,10 @@ const RouletteGame: React.FC = () => {
     if (isSpinning || !selectedBetType) {
       setMessage("Please select a bet type and numbers before spinning!")
       return
+    }
+
+    if (balance <= 0) {
+      setBetAmount(100)
     }
 
     setIsSpinning(true)
@@ -100,7 +127,7 @@ const RouletteGame: React.FC = () => {
     // Ensure selectedBetType is a valid key in payouts
     const payout =
       selectedBetType && payouts[selectedBetType] !== undefined
-        ? payouts[selectedBetType]
+        ? payouts[selectedBetType] + 1
         : 0
 
     // 1. แบบแทงเลือก1ตัวเลข: อัตราจ่าย 35 เท่า ถ้าเป็นเลข 0 จะจ่าย 36 เท่า
@@ -110,6 +137,12 @@ const RouletteGame: React.FC = () => {
         setBalance(
           (prev) => prev + (winningNumber === 0 ? 36 : payout) * betAmount
         )
+        updateBet({
+          minigameId: minigameId,
+          betAmount: betAmount,
+          betResult: "win",
+          multiplier: winningNumber === 0 ? 36 : payout,
+        })
       }
     }
 
@@ -121,6 +154,12 @@ const RouletteGame: React.FC = () => {
     ) {
       isWin = true
       setBalance((prev) => prev + payout * betAmount)
+      updateBet({
+        minigameId: minigameId,
+        betAmount: betAmount,
+        betResult: "win",
+        multiplier: payout,
+      })
     }
 
     // 3. แบบแทงต่ำ (1-18): อัตราจ่าย 2 เท่า
@@ -131,24 +170,38 @@ const RouletteGame: React.FC = () => {
     ) {
       isWin = true
       setBalance((prev) => prev + payout * betAmount)
+      updateBet({
+        minigameId: minigameId,
+        betAmount: betAmount,
+        betResult: "win",
+        multiplier: payout,
+      })
     }
 
     // 4. แบบแทงดำ: อัตราจ่าย 2 เท่า (เลขสีดำคือเลขที่อยู่ในช่องเลขคี่ที่ไม่เป็นแดง)
-    const blackNumbers = [
-      2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 27, 29, 31, 33, 35,
-    ]
+
     if (selectedBetType === "Black" && blackNumbers.includes(winningNumber)) {
       isWin = true
       setBalance((prev) => prev + payout * betAmount)
+      updateBet({
+        minigameId: minigameId,
+        betAmount: betAmount,
+        betResult: "win",
+        multiplier: payout,
+      })
     }
 
     // 5. แบบแทงแดง: อัตราจ่าย 2 เท่า (เลขสีแดงคือเลขที่อยู่ในช่องเลขคู่ที่ไม่เป็นดำ)
-    const redNumbers = [
-      1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36,
-    ]
+
     if (selectedBetType === "Red" && redNumbers.includes(winningNumber)) {
       isWin = true
       setBalance((prev) => prev + payout * betAmount)
+      updateBet({
+        minigameId: minigameId,
+        betAmount: betAmount,
+        betResult: "win",
+        multiplier: payout,
+      })
     }
 
     // 6. แบบแทงเลขคู่ (ไม่รวมเลข 0): อัตราจ่าย 2 เท่า
@@ -159,6 +212,12 @@ const RouletteGame: React.FC = () => {
     ) {
       isWin = true
       setBalance((prev) => prev + payout * betAmount)
+      updateBet({
+        minigameId: minigameId,
+        betAmount: betAmount,
+        betResult: "win",
+        multiplier: payout,
+      })
     }
 
     // 7. แบบแทงเลขคี่: อัตราจ่าย 2 เท่า
@@ -169,6 +228,12 @@ const RouletteGame: React.FC = () => {
     ) {
       isWin = true
       setBalance((prev) => prev + payout * betAmount)
+      updateBet({
+        minigameId: minigameId,
+        betAmount: betAmount,
+        betResult: "win",
+        multiplier: payout,
+      })
     }
 
     // 8. แบบแทงเต็งโซน (1-12, 13-24, 25-36): อัตราจ่าย 2 เท่า
@@ -184,6 +249,12 @@ const RouletteGame: React.FC = () => {
       ) {
         isWin = true
         setBalance((prev) => prev + payout * betAmount)
+        updateBet({
+          minigameId: minigameId,
+          betAmount: betAmount,
+          betResult: "win",
+          multiplier: payout,
+        })
       }
     }
 
@@ -200,6 +271,12 @@ const RouletteGame: React.FC = () => {
       ) {
         isWin = true
         setBalance((prev) => prev + payout * betAmount)
+        updateBet({
+          minigameId: minigameId,
+          betAmount: betAmount,
+          betResult: "win",
+          multiplier: payout,
+        })
       }
     }
 
@@ -207,29 +284,59 @@ const RouletteGame: React.FC = () => {
     if (selectedBetType === "2 Numbers" && selectedNumbers.has(winningNumber)) {
       isWin = true
       setBalance((prev) => prev + payout * betAmount)
+      updateBet({
+        minigameId: minigameId,
+        betAmount: betAmount,
+        betResult: "win",
+        multiplier: payout,
+      })
     }
 
     // 11. แบบแทงเลือก 3 ตัวเลข: อัตราจ่าย 11 เท่า
     if (selectedBetType === "3 Numbers" && selectedNumbers.has(winningNumber)) {
       isWin = true
       setBalance((prev) => prev + payout * betAmount)
+      updateBet({
+        minigameId: minigameId,
+        betAmount: betAmount,
+        betResult: "win",
+        multiplier: payout,
+      })
     }
 
     // 12. แบบแทงเลือก 4 ตัวเลข: อัตราจ่าย 8 เท่า
     if (selectedBetType === "4 Numbers" && selectedNumbers.has(winningNumber)) {
       isWin = true
       setBalance((prev) => prev + payout * betAmount)
+      updateBet({
+        minigameId: minigameId,
+        betAmount: betAmount,
+        betResult: "win",
+        multiplier: payout,
+      })
     }
 
     // 13. แบบแทงเลือก 6 ตัวเลข: อัตราจ่าย 5 เท่า
     if (selectedBetType === "6 Numbers" && selectedNumbers.has(winningNumber)) {
       isWin = true
       setBalance((prev) => prev + payout * betAmount)
+      updateBet({
+        minigameId: minigameId,
+        betAmount: betAmount,
+        betResult: "win",
+        multiplier: payout,
+      })
     }
     // If the player lost, update the message and balance
     if (!isWin) {
       setBalance((prev) => prev - betAmount) // Deduct the bet if they lost
       setMessage(`😢 You lost!`)
+      updateBet({
+        minigameId: minigameId,
+        betAmount: betAmount,
+        betResult: "loss",
+        multiplier: -1,
+      })
     } else {
       setMessage(`🎉 You won!`)
       setBalance((prev) => prev + payout * betAmount) // Update balance on win
@@ -273,16 +380,25 @@ const RouletteGame: React.FC = () => {
           Balance: <NumberFlow value={balance} />
         </h2>
 
-        <div>
+        <div className="flex flex-col">
+          <label>Bet Type: {selectedBetType || "None"}</label>
           <label>Bet Amount: </label>
-          <input
-            type="number"
-            value={betAmount}
-            min="1"
-            max={balance}
-            onChange={(e) => setBetAmount(Number(e.target.value))}
-            style={{ padding: "5px", margin: "10px" }}
-          />
+          <div className="flex flex-row">
+            <input
+              type="number"
+              value={betAmount}
+              min="1"
+              max={balance}
+              onChange={(e) => setBetAmount(Number(e.target.value))}
+              className="w-full"
+            />
+            <Button
+              onClick={() => setBetAmount(balance)}
+              className="ml-2 px-4 py-2 border-none rounded cursor-pointer bg-blue-500 hover:bg-blue-400 text-white font-alagard"
+            >
+              All In
+            </Button>
+          </div>
         </div>
 
         {/* Bet Type Selection */}
@@ -403,6 +519,10 @@ const RouletteGame: React.FC = () => {
             </div>
           </div>
         )}
+        <div>
+          <h1 className="text-xl font-alagard">Leaderboard of roulette</h1>
+          <MinigameTable minigameId={2} />
+        </div>
       </div>
 
       {/* Roulette Wheel */}
@@ -445,7 +565,11 @@ const RouletteGame: React.FC = () => {
                   textAlign: "center",
                   fontSize: "14px",
                   color:
-                    num === 0 ? "green" : index % 2 === 0 ? "red" : "black", // Change 0 to green
+                    num === 0
+                      ? "green"
+                      : blackNumbers.includes(num)
+                        ? "black"
+                        : "red",
                 }}
               >
                 {num}

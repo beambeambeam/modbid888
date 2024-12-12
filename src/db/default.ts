@@ -7,4 +7,10 @@ export const MINIGAME_DEFAULT: Minigame[] = [
     description: "blackjack",
     winMultiplier: 1.8,
   },
+  {
+    id: 2,
+    name: "roulette",
+    description: "roulette",
+    winMultiplier: 0,
+  },
 ]
