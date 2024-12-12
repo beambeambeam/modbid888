@@ -41,7 +41,7 @@ export const authenticatedAction = createServerActionProcedure()
     const user = await assertAuthenticated()
     await rateLimitByKey({
       key: `${user.id}-global`,
-      limit: 10,
+      limit: 100,
       window: 10000,
     })
     return { user }

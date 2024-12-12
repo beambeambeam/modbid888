@@ -80,6 +80,10 @@ const RouletteGame: React.FC<RouletteProps> = ({
       return
     }
 
+    if (balance <= 0) {
+      setBetAmount(100)
+    }
+
     setIsSpinning(true)
     const randomNumber = Math.floor(Math.random() * 37) // Random number between 0 and 36
     const spins = 10 // Number of full rotations
@@ -379,14 +383,22 @@ const RouletteGame: React.FC<RouletteProps> = ({
         <div className="flex flex-col">
           <label>Bet Type: {selectedBetType || "None"}</label>
           <label>Bet Amount: </label>
-          <input
-            type="number"
-            value={betAmount}
-            min="1"
-            max={balance}
-            onChange={(e) => setBetAmount(Number(e.target.value))}
-            style={{ padding: "5px", margin: "10px" }}
-          />
+          <div className="flex flex-row">
+            <input
+              type="number"
+              value={betAmount}
+              min="1"
+              max={balance}
+              onChange={(e) => setBetAmount(Number(e.target.value))}
+              className="w-full"
+            />
+            <Button
+              onClick={() => setBetAmount(balance)}
+              className="ml-2 px-4 py-2 border-none rounded cursor-pointer bg-blue-500 hover:bg-blue-400 text-white font-alagard"
+            >
+              All In
+            </Button>
+          </div>
         </div>
 
         {/* Bet Type Selection */}
