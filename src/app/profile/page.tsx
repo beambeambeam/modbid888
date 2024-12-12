@@ -42,7 +42,7 @@ import {
 import { Input } from "~/components/ui/input"
 import { useServerActionQuery } from "~/hooks/server-action-hooks"
 import { useToast } from "~/hooks/use-toast"
-import { cn } from "~/lib/utils"
+import { cn, formatNumberWithCommas } from "~/lib/utils"
 import { ArrayElement } from "~/types"
 
 function ProfilePage() {
@@ -321,7 +321,7 @@ function BetlogsTable() {
       cell(props) {
         return (
           <p className="w-full text-center">
-            {props.row.getValue("betAmount")}
+            {formatNumberWithCommas(props.row.getValue("betAmount"))}
           </p>
         )
       },
@@ -341,7 +341,9 @@ function BetlogsTable() {
       },
       cell(props) {
         return (
-          <p className="w-full text-center">{props.row.getValue("profit")}</p>
+          <p className="w-full text-center">
+            {formatNumberWithCommas(props.row.getValue("profit"))}
+          </p>
         )
       },
     },
@@ -361,7 +363,9 @@ function BetlogsTable() {
       cell(props) {
         return (
           <p className="w-full text-center">
-            {props.row.original.betAmount + props.row.original.profit}
+            {formatNumberWithCommas(
+              props.row.original.betAmount + props.row.original.profit
+            )}
           </p>
         )
       },
