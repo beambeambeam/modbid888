@@ -31,12 +31,18 @@ type RouletteProps = {
 }
 
 const blackNumbers = [
-  2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 27, 29, 31, 33, 35,
+  2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 30, 33, 35,
 ]
 
 const redNumbers = [
-  1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36,
+  1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 32, 34, 36,
 ]
+
+const rowMap: { [key: number]: number[] } = {
+  1: [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34],
+  2: [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35],
+  3: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36],
+}
 
 const RouletteGame: React.FC<RouletteProps> = ({
   balance: dbBalance,
@@ -54,20 +60,24 @@ const RouletteGame: React.FC<RouletteProps> = ({
 
   const [ballRotation] = useState<number>(0)
 
-  const numbers = Array.from({ length: 37 }, (_, i) => i) // 0-36
+  const numbers = [
+    0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5,
+    24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26,
+  ]
 
   const { execute: updateBet } = useServerAction(betTransaction)
 
   const payouts: Record<BetType, number> = {
+    //show on button
     "1 Number": 35, // Pays 35x
-    High: 1, // Pays 2x
-    Low: 1, // Pays 2x
-    Red: 1, // Pays 2x
-    Black: 1, // Pays 2x
-    Odd: 1, // Pays 2x
-    Even: 1, // Pays 2x
-    Zone: 1, // Pays 2x
-    Row: 1, // Pays 2x
+    High: 2, // Pays 2x
+    Low: 2, // Pays 2x
+    Red: 2, // Pays 2x
+    Black: 2, // Pays 2x
+    Odd: 2, // Pays 2x
+    Even: 2, // Pays 2x
+    Zone: 2, // Pays 2x
+    Row: 2, // Pays 2x
     "2 Numbers": 17, // Pays 17x
     "3 Numbers": 11, // Pays 11x
     "4 Numbers": 8, // Pays 8x
@@ -80,18 +90,24 @@ const RouletteGame: React.FC<RouletteProps> = ({
       return
     }
 
-    if (balance <= 0) {
-      setBetAmount(100)
+    if (balance < betAmount) {
+      setMessage("Insufficient balance to place the bet.")
+      return
     }
 
+    // หักเงินเดิมพันทันที
+    setBalance((prev) => prev - betAmount)
     setIsSpinning(true)
-    const randomNumber = Math.floor(Math.random() * 37) // Random number between 0 and 36
-    const spins = 10 // Number of full rotations
-    const degreePerNumber = 360 / 37 // Angle for each number
-    const targetRotation = spins * 360 + (37 - randomNumber) * degreePerNumber // Adjust for clockwise rotation
 
-    const totalDuration = 15000 // Total spin duration in milliseconds
-    const stopTimeBuffer = 5000 // Buffer time before stopping (e.g., stop 250ms early)
+    const randomNumber = Math.floor(Math.random() * numbers.length) // Random index within the new numbers array
+    const spins = 10 // Number of full rotations
+    const degreePerNumber = 360 / numbers.length // Adjust angle for each number
+    const targetRotation =
+      spins * 360 +
+      (numbers.length - (randomNumber % numbers.length)) * degreePerNumber
+
+    const totalDuration = 11500 // Total spin duration in milliseconds
+    const stopTimeBuffer = 6000 // Buffer time before stopping (e.g., stop 250ms early)
     const adjustedDuration = totalDuration - stopTimeBuffer // Adjusted total duration
     const startTime = Date.now()
 
@@ -113,8 +129,9 @@ const RouletteGame: React.FC<RouletteProps> = ({
 
         // Delay final actions to match totalDuration
         setTimeout(() => {
-          setResult(randomNumber)
-          calculateResult(randomNumber)
+          const winningNumber = numbers[randomNumber] // Get the winning number based on its index
+          setResult(winningNumber) // Set the result to the winning number
+          calculateResult(winningNumber) // Calculate the result based on the winning number
           setIsSpinning(false)
         }, stopTimeBuffer) // Delay by the stop buffer time
       }
@@ -124,222 +141,106 @@ const RouletteGame: React.FC<RouletteProps> = ({
   const calculateResult = (winningNumber: number) => {
     let isWin = false
 
-    // Ensure selectedBetType is a valid key in payouts
-    const payout =
-      selectedBetType && payouts[selectedBetType] !== undefined
-        ? payouts[selectedBetType] + 1
-        : 0
-
-    // 1. แบบแทงเลือก1ตัวเลข: อัตราจ่าย 35 เท่า ถ้าเป็นเลข 0 จะจ่าย 36 เท่า
-    if (selectedBetType === "1 Number") {
-      if (selectedNumber === winningNumber) {
-        isWin = true
-        setBalance(
-          (prev) => prev + (winningNumber === 0 ? 36 : payout) * betAmount
-        )
-        updateBet({
-          minigameId: minigameId,
-          betAmount: betAmount,
-          betResult: "win",
-          multiplier: winningNumber === 0 ? 36 : payout,
-        })
-      }
+    // ฟังก์ชันช่วยในการคำนวณเงินรางวัล
+    const awardPrize = (multiplier: number) => {
+      // Declare type for multiplier
+      isWin = true
+      setBalance((prev) => prev + multiplier * betAmount)
+      updateBet({
+        minigameId,
+        betAmount,
+        betResult: "win",
+        multiplier,
+      })
     }
 
-    // 2. แบบแทงสูง (19-36): อัตราจ่าย 2 เท่า
+    // 1. แทงเลขเดียว (1 Number)
+    if (selectedBetType === "1 Number" && selectedNumber === winningNumber) {
+      awardPrize(winningNumber === 0 ? 36 : payouts[selectedBetType])
+    }
+
+    // 2. แทงสูง (High: 19-36)
     if (
       selectedBetType === "High" &&
       winningNumber >= 19 &&
       winningNumber <= 36
     ) {
-      isWin = true
-      setBalance((prev) => prev + payout * betAmount)
-      updateBet({
-        minigameId: minigameId,
-        betAmount: betAmount,
-        betResult: "win",
-        multiplier: payout,
-      })
+      awardPrize(payouts[selectedBetType])
     }
 
-    // 3. แบบแทงต่ำ (1-18): อัตราจ่าย 2 เท่า
+    // 3. แทงต่ำ (Low: 1-18)
     if (
       selectedBetType === "Low" &&
       winningNumber >= 1 &&
       winningNumber <= 18
     ) {
-      isWin = true
-      setBalance((prev) => prev + payout * betAmount)
-      updateBet({
-        minigameId: minigameId,
-        betAmount: betAmount,
-        betResult: "win",
-        multiplier: payout,
-      })
+      awardPrize(payouts[selectedBetType])
     }
 
-    // 4. แบบแทงดำ: อัตราจ่าย 2 เท่า (เลขสีดำคือเลขที่อยู่ในช่องเลขคี่ที่ไม่เป็นแดง)
-
+    // 4. แทงดำ (Black)
     if (selectedBetType === "Black" && blackNumbers.includes(winningNumber)) {
-      isWin = true
-      setBalance((prev) => prev + payout * betAmount)
-      updateBet({
-        minigameId: minigameId,
-        betAmount: betAmount,
-        betResult: "win",
-        multiplier: payout,
-      })
+      awardPrize(payouts[selectedBetType])
     }
 
-    // 5. แบบแทงแดง: อัตราจ่าย 2 เท่า (เลขสีแดงคือเลขที่อยู่ในช่องเลขคู่ที่ไม่เป็นดำ)
-
+    // 5. แทงแดง (Red)
     if (selectedBetType === "Red" && redNumbers.includes(winningNumber)) {
-      isWin = true
-      setBalance((prev) => prev + payout * betAmount)
-      updateBet({
-        minigameId: minigameId,
-        betAmount: betAmount,
-        betResult: "win",
-        multiplier: payout,
-      })
+      awardPrize(payouts[selectedBetType])
     }
 
-    // 6. แบบแทงเลขคู่ (ไม่รวมเลข 0): อัตราจ่าย 2 เท่า
+    // 6. แทงเลขคู่ (Even)
     if (
       selectedBetType === "Even" &&
       winningNumber !== 0 &&
       winningNumber % 2 === 0
     ) {
-      isWin = true
-      setBalance((prev) => prev + payout * betAmount)
-      updateBet({
-        minigameId: minigameId,
-        betAmount: betAmount,
-        betResult: "win",
-        multiplier: payout,
-      })
+      awardPrize(payouts[selectedBetType])
     }
 
-    // 7. แบบแทงเลขคี่: อัตราจ่าย 2 เท่า
-    if (
-      selectedBetType === "Odd" &&
-      winningNumber !== 0 &&
-      winningNumber % 2 !== 0
-    ) {
-      isWin = true
-      setBalance((prev) => prev + payout * betAmount)
-      updateBet({
-        minigameId: minigameId,
-        betAmount: betAmount,
-        betResult: "win",
-        multiplier: payout,
-      })
+    // 7. แทงเลขคี่ (Odd)
+    if (selectedBetType === "Odd" && winningNumber % 2 !== 0) {
+      awardPrize(payouts[selectedBetType])
     }
 
-    // 8. แบบแทงเต็งโซน (1-12, 13-24, 25-36): อัตราจ่าย 2 เท่า
-    const zone1 = Array.from({ length: 12 }, (_, i) => i + 1)
-    const zone2 = Array.from({ length: 12 }, (_, i) => i + 13)
-    const zone3 = Array.from({ length: 12 }, (_, i) => i + 25)
-
+    // 8. แทงโซน (Zone: 1-12, 13-24, 25-36)
     if (selectedBetType === "Zone") {
-      if (
-        (selectedNumber === 1 && zone1.includes(winningNumber)) ||
-        (selectedNumber === 2 && zone2.includes(winningNumber)) ||
-        (selectedNumber === 3 && zone3.includes(winningNumber))
-      ) {
-        isWin = true
-        setBalance((prev) => prev + payout * betAmount)
-        updateBet({
-          minigameId: minigameId,
-          betAmount: betAmount,
-          betResult: "win",
-          multiplier: payout,
-        })
+      const zoneMap: { [key: number]: number[] } = {
+        1: Array.from({ length: 12 }, (_, i) => i + 1),
+        2: Array.from({ length: 12 }, (_, i) => i + 13),
+        3: Array.from({ length: 12 }, (_, i) => i + 25),
+      }
+      if (selectedNumber !== null && zoneMap[selectedNumber]) {
+        awardPrize(payouts[selectedBetType])
       }
     }
 
-    // 9. แบบแทงเต็งแถวแนวนอน (1, 4, 7...; 2, 5, 8...; 3, 6, 9...)
-    const row1 = [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34]
-    const row2 = [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35]
-    const row3 = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36]
-
-    if (selectedBetType === "Row") {
+    // 9. แทงแถวแนวนอน (Row: 1, 2, 3)
+    if (selectedBetType === "Row" && selectedNumber !== null) {
+      // ตรวจสอบว่าเลขที่ชนะอยู่ในแถวที่เลือก
       if (
-        (selectedNumber === 1 && row1.includes(winningNumber)) ||
-        (selectedNumber === 2 && row2.includes(winningNumber)) ||
-        (selectedNumber === 3 && row3.includes(winningNumber))
+        rowMap[selectedNumber] &&
+        rowMap[selectedNumber].includes(winningNumber)
       ) {
-        isWin = true
-        setBalance((prev) => prev + payout * betAmount)
-        updateBet({
-          minigameId: minigameId,
-          betAmount: betAmount,
-          betResult: "win",
-          multiplier: payout,
-        })
+        awardPrize(payouts[selectedBetType])
       }
     }
 
-    // 10. แบบแทงเลือก 2 ตัวเลข: อัตราจ่าย 17 เท่า
-    if (selectedBetType === "2 Numbers" && selectedNumbers.has(winningNumber)) {
-      isWin = true
-      setBalance((prev) => prev + payout * betAmount)
-      updateBet({
-        minigameId: minigameId,
-        betAmount: betAmount,
-        betResult: "win",
-        multiplier: payout,
-      })
+    // 10-13: แทงหลายตัวเลข (2, 3, 4, 6 Numbers)
+    const groupBetTypes = ["2 Numbers", "3 Numbers", "4 Numbers", "6 Numbers"]
+    if (selectedBetType && groupBetTypes.includes(selectedBetType)) {
+      awardPrize(payouts[selectedBetType])
     }
 
-    // 11. แบบแทงเลือก 3 ตัวเลข: อัตราจ่าย 11 เท่า
-    if (selectedBetType === "3 Numbers" && selectedNumbers.has(winningNumber)) {
-      isWin = true
-      setBalance((prev) => prev + payout * betAmount)
-      updateBet({
-        minigameId: minigameId,
-        betAmount: betAmount,
-        betResult: "win",
-        multiplier: payout,
-      })
-    }
-
-    // 12. แบบแทงเลือก 4 ตัวเลข: อัตราจ่าย 8 เท่า
-    if (selectedBetType === "4 Numbers" && selectedNumbers.has(winningNumber)) {
-      isWin = true
-      setBalance((prev) => prev + payout * betAmount)
-      updateBet({
-        minigameId: minigameId,
-        betAmount: betAmount,
-        betResult: "win",
-        multiplier: payout,
-      })
-    }
-
-    // 13. แบบแทงเลือก 6 ตัวเลข: อัตราจ่าย 5 เท่า
-    if (selectedBetType === "6 Numbers" && selectedNumbers.has(winningNumber)) {
-      isWin = true
-      setBalance((prev) => prev + payout * betAmount)
-      updateBet({
-        minigameId: minigameId,
-        betAmount: betAmount,
-        betResult: "win",
-        multiplier: payout,
-      })
-    }
-    // If the player lost, update the message and balance
+    // หากแพ้
     if (!isWin) {
-      setBalance((prev) => prev - betAmount) // Deduct the bet if they lost
-      setMessage(`😢 You lost!`)
+      setMessage("\ud83d\ude25 You lost!")
       updateBet({
-        minigameId: minigameId,
-        betAmount: betAmount,
+        minigameId,
+        betAmount,
         betResult: "loss",
         multiplier: -1,
       })
     } else {
-      setMessage(`🎉 You won!`)
-      setBalance((prev) => prev + payout * betAmount) // Update balance on win
+      setMessage("\ud83c\udf89 You won!")
     }
   }
 
@@ -452,18 +353,18 @@ const RouletteGame: React.FC<RouletteProps> = ({
             <p>Row2 : 2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35</p>
             <p>Row3 : 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36</p>
             <div style={{ display: "flex", gap: "10px" }}>
-              {[1, 2, 3].map((zone) => (
+              {Object.keys(rowMap).map((rowKey) => (
                 <Button
                   variant="ghost"
-                  key={zone}
-                  onClick={() => setSelectedNumber(zone)}
+                  key={rowKey}
+                  onClick={() => setSelectedNumber(Number(rowKey))}
                   className={cn(
                     "py-2 px-4 border",
-                    selectedNumber === zone && "ring-red-500 ring",
+                    selectedNumber === Number(rowKey) && "ring-red-500 ring",
                     "border-gray-500 cursor-pointer"
                   )}
                 >
-                  Zone {zone}
+                  Row {rowKey}
                 </Button>
               ))}
             </div>
