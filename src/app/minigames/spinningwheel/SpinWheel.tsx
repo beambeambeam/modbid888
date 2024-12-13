@@ -2,23 +2,15 @@
 
 import React, { useState } from "react"
 
-import "./SpinWheel.css"
-
-interface Segment {
-  label: string
-  color: string
-  probability: number // คำนวนตวามน่าจะเป็น
-}
-
 const Wheel: React.FC = () => {
-  const [spinning, setSpinning] = useState<boolean>(false)
   const [result, setResult] = useState<string | null>(null)
-  const [spinDegrees, setSpinDegrees] = useState<number>(0)
   const [coins, setCoins] = useState<number>(0)
   const [mod, setMod] = useState<number>(500)
+  const [rotation, setRotation] = useState<number>(0) // หมุนปัจจุบัน
+  const [isSpinning, setIsSpinning] = useState<boolean>(false)
 
-  const segments: Segment[] = [
-    { label: "Free 1 coin", color: "#ff9999", probability: 0.2 }, // ชื่อ และโอกาศออกของแต่ละอันวันใน Wheel
+  const numbers = [
+    { label: "Free 1 coin", color: "#ff9999", probability: 0.2 },
     { label: "20", color: "#99ccff", probability: 0.4 },
     { label: "50", color: "#ffff99", probability: 0.2 },
     { label: "100", color: "#ccff99", probability: 0.06 },
@@ -26,49 +18,36 @@ const Wheel: React.FC = () => {
     { label: "1,000", color: "#ff99ff", probability: 0.01 },
   ]
 
-  const segmentAngle: number = 360 / segments.length
+  const segmentAngle: number = 360 / numbers.length
 
   const spinWheel = (): void => {
-    if (spinning || coins <= 0) return
+    if (coins <= 0 || isSpinning) return
 
-    setCoins(coins - 1) // ลดเหรียญตอนกดหมุน
-    setSpinning(true)
-    setSpinDegrees(0)
+    setCoins((prev) => prev - 1)
+    setIsSpinning(true)
 
-    setTimeout(() => {
-      // set เวลาการหมุน
-      const prizeIndex: number = getWeightedRandomIndex(
-        segments.map((seg) => seg.probability)
-      )
-      const targetResult = segments[prizeIndex].label
+    // สุ่มรางวัลล่วงหน้า
+    const prizeIndex: number = getWeightedRandomIndex(
+      numbers.map((num) => num.probability)
+    )
+    const targetResult = numbers[prizeIndex].label
+    setResult(targetResult)
 
-      const spinRanges: { [key: string]: [number, number] } = {
-        "Free 1 coin": [1025, 1080], // range องศาการหมุนของแต่ละอัน
-        "20": [1320, 1375],
-        "50": [1260, 1315],
-        "100": [1205, 1255],
-        "500": [1145, 1200],
-        "1,000": [1085, 1140],
-      }
+    // คำนวณมุมเป้าหมาย (ตรงกลางเนื้อเค้ก)
+    const offset = 90
+    const targetAngle = prizeIndex * segmentAngle + segmentAngle / 2 + offset
+    const totalRotation = 360 * 5 + (360 - targetAngle) // หมุน 5 รอบและหยุดตรงเป้าหมาย
 
-      const [minSpin, maxSpin] = spinRanges[targetResult]
-      const randomSpin = Math.floor(
-        minSpin + Math.random() * (maxSpin - minSpin)
-      ) // สมการคำนวนองศาการหมุน
+    const startTime = Date.now()
 
-      const totalSpin = randomSpin
-      if (totalSpin < 1000) {
-        setSpinDegrees(0) // Reset Wheel ให้หมุนกลับไป 0 องศา
-        return
-      }
+    const spinInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime
+      if (elapsed >= 7000) {
+        clearInterval(spinInterval)
+        setRotation(totalRotation % 360) // ตั้งค่าหยุดที่มุมสุดท้าย
+        setIsSpinning(false)
 
-      setSpinDegrees(totalSpin) // หมุนต่อหลังจาก Reset
-
-      setTimeout(() => {
-        setResult(targetResult)
-        setSpinning(false)
-
-        // รางวัลที่ได้จาก Wheel
+        // เพิ่มรางวัลหลังจากหมุนหยุด
         switch (targetResult) {
           case "Free 1 coin":
             setCoins((prev) => prev + 1)
@@ -91,12 +70,15 @@ const Wheel: React.FC = () => {
           default:
             break
         }
-      }, 3000)
-    }, 3000) // Delay ในก่าร spin
+      } else {
+        const progress = elapsed / 7000
+        const easeOutRotation = totalRotation * (1 - Math.pow(1 - progress, 3)) // ลดความเร็วตอนหยุด
+        setRotation(easeOutRotation)
+      }
+    }, 1000 / 60) // อัปเดตทุก 16.67ms (ประมาณ 60 FPS)
   }
 
   const buyCoinsWithMod = () => {
-    // การเปลี่ยนจาก Mod เป็น coin
     if (mod >= 500) {
       setCoins((prev) => prev + 5)
       setMod((prev) => prev - 500)
@@ -104,7 +86,6 @@ const Wheel: React.FC = () => {
   }
 
   const getWeightedRandomIndex = (weights: number[]): number => {
-    // เลือกส่วนที่ชนะจากความน่าจะเป็น
     const cumulativeWeights = weights.reduce<number[]>((acc, weight, index) => {
       acc[index] = weight + (acc[index - 1] || 0)
       return acc
@@ -117,7 +98,6 @@ const Wheel: React.FC = () => {
   }
 
   const calculateArcPath = (
-    //คำนวนเส้นโค้งที่ใช้ในการหมุนตอนเริ่่ม และตอนท้าย
     index: number,
     totalSegments: number,
     radius: number
@@ -135,31 +115,26 @@ const Wheel: React.FC = () => {
   }
 
   return (
-    // ส่วนประกอบในหน้า web และ ปุ่มต่าง ๆ
-    <div className="wheel-container">
-      <div className="mod">Mod: {mod}</div>
-      <div className="coins">Coins: {coins}</div>
-      <div className="arrow">▼</div>
+    <div className="flex flex-col items-center space-y-4">
+      <div className="text-lg font-bold">Mod: {mod}</div>
+      <div className="text-lg font-bold">Coins: {coins}</div>
+      <div className="text-xl font-bold">▼</div>
 
       <svg
-        className={`wheel ${spinning ? "spinning" : ""}`}
-        width="300"
-        height="300"
+        className="w-72 h-72"
         viewBox="0 0 300 300"
-        style={{
-          transform: `rotate(${spinDegrees}deg)`,
-        }}
+        style={{ transform: `rotate(${rotation}deg)` }}
       >
-        {segments.map((segment, index) => (
+        {numbers.map((number, index) => (
           <path
             key={index}
-            d={calculateArcPath(index, segments.length, 150)}
-            fill={segment.color}
+            d={calculateArcPath(index, numbers.length, 150)}
+            fill={number.color}
             stroke="#000"
             strokeWidth="1"
           />
         ))}
-        {segments.map((segment, index) => {
+        {numbers.map((number, index) => {
           const angle =
             (index * segmentAngle + segmentAngle / 2) * (Math.PI / 180)
           const textX = 150 + 100 * Math.cos(angle)
@@ -175,19 +150,29 @@ const Wheel: React.FC = () => {
               fontSize="12"
               fill="#000"
             >
-              {segment.label}
+              {number.label}
             </text>
           )
         })}
       </svg>
 
-      <button onClick={spinWheel} disabled={spinning || coins <= 0}>
-        {spinning ? "Spinning..." : coins > 0 ? "Spin" : "Out of Coins"}
+      <button
+        onClick={spinWheel}
+        className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
+        disabled={coins <= 0 || isSpinning}
+      >
+        {isSpinning ? "Spinning..." : coins > 0 ? "Spin" : "Out of Coins"}
       </button>
-      <button onClick={buyCoinsWithMod} disabled={mod < 500}>
+      <button
+        onClick={buyCoinsWithMod}
+        className="px-4 py-2 bg-green-500 text-white rounded disabled:opacity-50"
+        disabled={mod < 500 || isSpinning}
+      >
         Buy 5 Coins with 500 Mod
       </button>
-      {result && !spinning && <div className="result">Result: {result}</div>}
+      {result && !isSpinning && (
+        <div className="text-lg font-bold">Result: {result}</div>
+      )}
     </div>
   )
 }
