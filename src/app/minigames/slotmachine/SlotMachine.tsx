@@ -2,8 +2,6 @@
 
 import React, { useState } from "react"
 
-import "./SlotMachine.css"
-
 import Reel from "./Reel"
 
 const symbols = ["🍒", "🍋", "🍊", "🍇", "⭐", "🔔"]
@@ -95,28 +93,46 @@ const SlotMachine: React.FC = () => {
   }
 
   return (
-    <div className="slot-machine">
-      <h2>Balance: {balance} mods</h2>
-      <div className="reels">
-        {reelsSet1.map((symbol, index) => (
-          <Reel key={`set1-${index}`} symbol={symbol} isSpinning={isSpinning} />
-        ))}
+    <div className="p-8 bg-gray-300 text-center font-sans rounded-lg max-w-lg mx-auto">
+      <h2 className="text-2xl font-semibold mb-4">Balance: {balance} mods</h2>
+      <div className="flex justify-center space-x-4 mb-6">
+        <div className="flex flex-col items-center">
+          {reelsSet1.map((symbol, index) => (
+            <Reel
+              key={`set1-${index}`}
+              symbol={symbol}
+              isSpinning={isSpinning}
+            />
+          ))}
+        </div>
+        <div className="flex flex-col items-center">
+          {reelsSet2.map((symbol, index) => (
+            <Reel
+              key={`set2-${index}`}
+              symbol={symbol}
+              isSpinning={isSpinning}
+            />
+          ))}
+        </div>
+        <div className="flex flex-col items-center">
+          {reelsSet3.map((symbol, index) => (
+            <Reel
+              key={`set3-${index}`}
+              symbol={symbol}
+              isSpinning={isSpinning}
+            />
+          ))}
+        </div>
       </div>
-      <div className="reels">
-        {reelsSet2.map((symbol, index) => (
-          <Reel key={`set2-${index}`} symbol={symbol} isSpinning={isSpinning} />
-        ))}
-      </div>
-      <div className="reels">
-        {reelsSet3.map((symbol, index) => (
-          <Reel key={`set3-${index}`} symbol={symbol} isSpinning={isSpinning} />
-        ))}
-      </div>
-      <button onClick={spinReels} disabled={isSpinning || balance < 100}>
+      <button
+        onClick={spinReels}
+        disabled={isSpinning || balance < 100}
+        className={`py-2 px-6 rounded-lg text-xl font-bold w-full bg-blue-500 hover:bg-blue-600 ${isSpinning || balance < 100 ? "opacity-50 cursor-not-allowed" : ""}`}
+      >
         {isSpinning ? "Spinning..." : "Spin"}
       </button>
-      {message && <p className="message">{message}</p>}
-      <div className="payout-info">
+      {message && <p className="mt-4 text-xl text-blue-500">{message}</p>}
+      <div className="mt-6 text-sm">
         <p>Spin 1 use 100 mods</p>
         <p>🍒🍒🍒 = 100 mods</p>
         <p>🍋🍋🍋 = 150 mods</p>
