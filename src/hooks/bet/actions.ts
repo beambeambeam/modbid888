@@ -21,7 +21,7 @@ export const betTransaction = authenticatedAction
   .input(
     z.object({
       betAmount: z.number().min(1),
-      betResult: z.enum(["win", "loss", "tie"]),
+      betResult: z.enum(["win", "loss"]),
       minigameId: z.number(),
       multiplier: z.number(),
     })

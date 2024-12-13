@@ -165,7 +165,7 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
         betAmount: Number(bet),
         minigameId: minigameId,
         multiplier: 0, // ไม่มีผลกำไรหรือขาดทุน
-        betResult: "tie", // ใช้ "tie" เพื่อเก็บ log ว่าผลคือเสมอ
+        betResult: "loss", // ใช้ "loss" แทน "tie"
       })
       setPlayerMoney((prev) => prev + Number(bet)) // คืนเงินเดิมพัน
     } else if (player.score < dealer.score || player.score > 21) {

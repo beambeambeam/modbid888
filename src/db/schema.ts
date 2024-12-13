@@ -11,7 +11,7 @@ import {
 } from "drizzle-orm/pg-core"
 
 export const roleEnum = pgEnum("role", ["member", "admin"])
-export const betResultEnum = pgEnum("bet_result", ["win", "loss", "tie"]) // เพิ่ม "tie"
+export const betResultEnum = pgEnum("bet_result", ["win", "loss"])
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
