@@ -53,7 +53,7 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
   const [deck, setDeck] = useState<Card[]>([])
   const [gameOver, setGameOver] = useState(false)
   const [dealerRevealed, setDealerRevealed] = useState(false)
-  const [bet, setBet] = useState<number>(0)
+  const [bet, setBet] = useState<number>(100)
   const [playerMoney, setPlayerMoney] = useState<number>(balance)
   const [isGameRunning, setIsGameRunning] = useState<boolean>(false)
   const { toast } = useToast()
@@ -77,18 +77,32 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
   const startGame = () => {
     setIsGameRunning(true)
     const betAmount = Number(bet)
-    if (playerMoney <= 0) {
-      setBet(100)
-    } else if (betAmount <= 0 || betAmount > playerMoney) {
+
+    // Allow the bet to be less than 100 only if the balance is less than 100
+    if (betAmount < 100 && playerMoney >= 100) {
       toast({
         title: "Invalid Bet",
-        description: "Please enter a valid bet amount.",
+        description: "The minimum bet is 100.",
         variant: "destructive",
       })
-
       setIsGameRunning(false)
       return
     }
+
+    // If the player's balance is less than 100, allow any bet less than their remaining balance
+    if (betAmount > playerMoney) {
+      toast({
+        title: "Insufficient Balance",
+        description: "You don't have enough balance to place this bet.",
+        variant: "destructive",
+      })
+      setIsGameRunning(false)
+      return
+    }
+
+    // Deduct the bet amount from the player's balance
+    setPlayerMoney((prev) => prev - betAmount)
+
     const newDeck = initializeDeck()
     const playerHand = [newDeck.pop()!, newDeck.pop()!]
     const dealerHand = [newDeck.pop()!, newDeck.pop()!]
@@ -143,7 +157,17 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
         multiplier: multiplier,
         betResult: "win",
       })
-      setPlayerMoney((prev) => prev + Number(bet) * multiplier)
+      // เพิ่มเงินกลับเมื่อชนะ
+      setPlayerMoney((prev) => prev + Number(bet) * (1 + multiplier))
+    } else if (player.score === dealer.score) {
+      // กรณีเสมอ คืนเงินเดิมพันกลับ
+      updateBet({
+        betAmount: Number(bet),
+        minigameId: minigameId,
+        multiplier: 0, // ไม่มีผลกำไรหรือขาดทุน
+        betResult: "tie", // ใช้ "tie" เพื่อเก็บ log ว่าผลคือเสมอ
+      })
+      setPlayerMoney((prev) => prev + Number(bet)) // คืนเงินเดิมพัน
     } else if (player.score < dealer.score || player.score > 21) {
       updateBet({
         betAmount: Number(bet),
@@ -151,7 +175,7 @@ const BlackjackGame: React.FC<BlackjackGameProps> = ({
         multiplier: -1,
         betResult: "loss",
       })
-      setPlayerMoney((prev) => prev - Number(bet))
+      // ไม่ทำอะไรเพราะเงินเดิมพันถูกหักไปแล้วใน startGame
     }
 
     setIsGameRunning(false)
