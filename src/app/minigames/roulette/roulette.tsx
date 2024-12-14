@@ -56,7 +56,7 @@ const RouletteGame: React.FC<RouletteProps> = ({
   const [isSpinning, setIsSpinning] = useState<boolean>(false)
   const [message, setMessage] = useState<string>("")
   const [balance, setBalance] = useState<number>(dbBalance)
-  const [betAmount, setBetAmount] = useState<number>(10) // Default bet amount
+  const [betAmount, setBetAmount] = useState<number>(100) // Default bet amount
 
   const [ballRotation] = useState<number>(0)
 
@@ -92,6 +92,11 @@ const RouletteGame: React.FC<RouletteProps> = ({
 
     if (balance < betAmount) {
       setMessage("Insufficient balance to place the bet.")
+      return
+    }
+
+    if (betAmount < 100 && balance >= 100) {
+      setMessage("The minimum bet is 100.")
       return
     }
 
