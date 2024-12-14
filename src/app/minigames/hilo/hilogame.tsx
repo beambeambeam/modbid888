@@ -121,10 +121,10 @@ const HiloGame: React.FC<HiloGameProps> = ({ balance, minigameId }) => {
               >
                 {/* แสดงภาพลูกเต๋าจากพาธที่แก้ไข */}
                 <Image
-                  src={`/static/image/minigames/dice-six-faces-${result}.svg`}
+                  src={`/static/image/minigames/dice-six-faces-${result.toString()}.svg`}
                   alt={`Dice ${result}`}
-                  width={64} // Adjust the width as needed
-                  height={64} // Adjust the height as needed
+                  width={0}
+                  height={0}
                   className={`w-16 h-16 ${isRolling ? "animate-spin" : ""}`}
                 />
               </div>
