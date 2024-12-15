@@ -13,9 +13,9 @@ const Wheel: React.FC = () => {
     { label: "Free 1 coin", color: "#ff9999", probability: 0.2 },
     { label: "20", color: "#99ccff", probability: 0.4 },
     { label: "50", color: "#ffff99", probability: 0.2 },
-    { label: "100", color: "#ccff99", probability: 0.06 },
-    { label: "500", color: "#ffcc99", probability: 0.03 },
-    { label: "1,000", color: "#ff99ff", probability: 0.01 },
+    { label: "100", color: "#ccff99", probability: 0.1 },
+    { label: "500", color: "#ffcc99", probability: 0.06 },
+    { label: "1,000", color: "#ff99ff", probability: 0.04 },
   ]
 
   const segmentAngle: number = 360 / numbers.length
@@ -82,6 +82,13 @@ const Wheel: React.FC = () => {
     if (mod >= 500) {
       setCoins((prev) => prev + 5)
       setMod((prev) => prev - 500)
+    }
+  }
+
+  const buySingleCoinWithMod = () => {
+    if (mod >= 100) {
+      setCoins((prev) => prev + 1)
+      setMod((prev) => prev - 100)
     }
   }
 
@@ -162,6 +169,13 @@ const Wheel: React.FC = () => {
         disabled={coins <= 0 || isSpinning}
       >
         {isSpinning ? "Spinning..." : coins > 0 ? "Spin" : "Out of Coins"}
+      </button>
+      <button
+        onClick={buySingleCoinWithMod}
+        className="px-4 py-2 bg-green-500 text-white rounded disabled:opacity-50"
+        disabled={mod < 100 || isSpinning}
+      >
+        Buy 1 Coin with 100 Mod
       </button>
       <button
         onClick={buyCoinsWithMod}
