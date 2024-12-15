@@ -13,6 +13,13 @@ import { getLeaderboardAction } from "./action"
 
 const columns: ColumnDef<Profiles>[] = [
   {
+    id: "index",
+    header: () => {},
+    cell: ({ row }) => (
+      <p className="font-alagard text-2xl text-center">{row.index + 1}</p>
+    ),
+  },
+  {
     accessorKey: "displayName",
     header: "Display Name",
     cell: ({ row }) => (
