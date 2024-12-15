@@ -1,6 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import { SearchIcon } from "lucide-react"
+import { CircleHelpIcon } from "lucide-react"
 
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "~/components/ui/card"
@@ -9,6 +9,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "~/components/ui/hover-card"
+import ShineBorder from "~/components/ui/shine-border"
 
 export type GameCardProps = {
   title: string
@@ -20,51 +21,53 @@ export type GameCardProps = {
 
 function GameCard({ title, desc, tips, img, disabled }: GameCardProps) {
   return (
-    <Card className="w-[24rem] p-0">
-      <CardHeader className="p-0 w-full">
-        <Image
-          src={img}
-          alt={title}
-          width={0}
-          height={0}
-          className="w-full h-full"
-        />
-      </CardHeader>
+    <ShineBorder color={["#A07CFE", "#FE8FB5", "#FFBE7B"]} className="p-0">
+      <Card className="w-[24rem] p-0">
+        <CardHeader className="p-0 w-full">
+          <Image
+            src={img}
+            alt={title}
+            width={0}
+            height={0}
+            className="w-full h-full"
+          />
+        </CardHeader>
 
-      <CardContent className="py-6 px-6 flex flex-col gap-2">
-        <div className="w-full flex justify-between">
-          <h1 className="font-alagard text-3xl w-full">{title}</h1>
-          {tips && (
-            <HoverCard>
-              <HoverCardTrigger>
-                <SearchIcon className="size-6 w-fit h-full" />
-              </HoverCardTrigger>
-              <HoverCardContent>{tips}</HoverCardContent>
-            </HoverCard>
-          )}
-        </div>
-        <HoverCard>
-          <HoverCardTrigger className="text-muted-foreground truncate">
-            {desc}
-          </HoverCardTrigger>
-          <HoverCardContent>{desc}</HoverCardContent>
-        </HoverCard>
-      </CardContent>
+        <CardContent className="py-6 px-6 flex flex-col gap-2">
+          <div className="w-full flex justify-between">
+            <h1 className="font-alagard text-3xl w-full capitalize">{title}</h1>
+            {tips && (
+              <HoverCard>
+                <HoverCardTrigger>
+                  <CircleHelpIcon className="w-fit h-fit text-muted-foreground/20 hover:text-muted-foreground transition-colors cursor-pointer" />
+                </HoverCardTrigger>
+                <HoverCardContent>{tips}</HoverCardContent>
+              </HoverCard>
+            )}
+          </div>
+          <HoverCard>
+            <HoverCardTrigger className="text-muted-foreground truncate">
+              {desc}
+            </HoverCardTrigger>
+            <HoverCardContent>{desc}</HoverCardContent>
+          </HoverCard>
+        </CardContent>
 
-      {disabled ? (
-        <CardFooter className="p-0 w-full flex items-center justify-center py-4 bg-yellow-400 text-black font-alagard">
-          <p>Under Construction</p>
-        </CardFooter>
-      ) : (
-        <CardFooter>
-          <Link href={`/minigames/${title}`}>
-            <Button variant="outline" className="font-alagard">
-              Play {title}!
-            </Button>
-          </Link>
-        </CardFooter>
-      )}
-    </Card>
+        {disabled ? (
+          <CardFooter className="p-0 w-full flex items-center justify-center py-4 bg-yellow-400 text-black font-alagard">
+            <p>Under Construction</p>
+          </CardFooter>
+        ) : (
+          <CardFooter>
+            <Link href={`/minigames/${title}`}>
+              <Button variant="outline" className="font-alagard capitalize">
+                Play {title}!
+              </Button>
+            </Link>
+          </CardFooter>
+        )}
+      </Card>
+    </ShineBorder>
   )
 }
 export default GameCard

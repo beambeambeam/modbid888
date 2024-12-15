@@ -62,6 +62,7 @@ const config: Config = {
       },
       animation: {
         "shiny-text": "shiny-text 8s infinite",
+        shine: "shine var(--duration) infinite linear",
       },
       keyframes: {
         "shiny-text": {
@@ -70,6 +71,17 @@ const config: Config = {
           },
           "30%, 60%": {
             "background-position": "calc(100% + var(--shiny-width)) 0",
+          },
+        },
+        shine: {
+          "0%": {
+            "background-position": "0% 0%",
+          },
+          "50%": {
+            "background-position": "100% 100%",
+          },
+          to: {
+            "background-position": "0% 0%",
           },
         },
       },
