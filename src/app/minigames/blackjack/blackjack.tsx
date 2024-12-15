@@ -9,6 +9,8 @@ import { Input } from "~/components/ui/input"
 import { betTransaction } from "~/hooks/bet/actions"
 import { useToast } from "~/hooks/use-toast"
 
+import { MinigameProps } from "../actions"
+
 type Card = {
   suit: string
   value: string
@@ -37,17 +39,9 @@ const values = [
   { value: "K", score: 10 },
 ]
 
-type BlackjackGameProps = {
-  balance: number
-  minigameId: number
-}
-
 const multiplier = 1.8
 
-const BlackjackGame: React.FC<BlackjackGameProps> = ({
-  balance,
-  minigameId,
-}) => {
+const BlackjackGame: React.FC<MinigameProps> = ({ balance, minigameId }) => {
   const [player, setPlayer] = useState<Player>({ hand: [], score: 0 })
   const [dealer, setDealer] = useState<Player>({ hand: [], score: 0 })
   const [deck, setDeck] = useState<Card[]>([])

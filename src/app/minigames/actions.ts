@@ -31,3 +31,8 @@ export const getTop3BetAction = authenticatedAction
 
     return top3
   })
+
+export type MinigameProps = {
+  balance: number
+  minigameId: number
+}
