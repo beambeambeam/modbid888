@@ -8,6 +8,7 @@ import { Button } from "~/components/ui/button"
 import { betTransaction } from "~/hooks/bet/actions"
 import { cn } from "~/lib/utils"
 
+import { MinigameProps } from "../actions"
 import MinigameTable from "../table"
 
 type BetType =
@@ -25,11 +26,6 @@ type BetType =
   | "4 Numbers"
   | "6 Numbers"
 
-type RouletteProps = {
-  balance: number
-  minigameId: number
-}
-
 const blackNumbers = [
   2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 30, 33, 35,
 ]
@@ -44,7 +40,7 @@ const rowMap: { [key: number]: number[] } = {
   3: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36],
 }
 
-const RouletteGame: React.FC<RouletteProps> = ({
+const RouletteGame: React.FC<MinigameProps> = ({
   balance: dbBalance,
   minigameId,
 }) => {
