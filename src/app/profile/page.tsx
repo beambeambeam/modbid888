@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useServerAction } from "zsa-react"
 
+import Loading from "~/app/minigames/_components/loading"
 import getUserProfile, {
   getBetlogsAction,
   updateDisplayNameAction,
@@ -52,7 +53,7 @@ function ProfilePage() {
   })
 
   if (isError || !data) {
-    return <p>error</p>
+    return <Loading />
   }
 
   return (
