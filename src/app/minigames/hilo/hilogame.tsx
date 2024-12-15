@@ -2,6 +2,21 @@
 
 import React, { useState } from "react"
 import Image from "next/image"
+import NumberFlow from "@number-flow/react"
+import { useServerAction } from "zsa-react"
+
+import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select"
+import { betTransaction } from "~/hooks/bet/actions"
 
 // กำหนดประเภทสำหรับพร็อพที่คอมโพเนนต์นี้จะรับ
 interface HiloGameProps {
@@ -10,13 +25,14 @@ interface HiloGameProps {
 }
 
 const HiloGame: React.FC<HiloGameProps> = ({ balance, minigameId }) => {
-  console.log(minigameId)
   const [bet, setBet] = useState<number>(100)
   const [guess, setGuess] = useState<string>("")
   const [diceResults, setDiceResults] = useState<number[]>([])
   const [gameMessage, setGameMessage] = useState<string>("")
   const [playerBalance, setPlayerBalance] = useState<number>(balance) // ใช้ค่า balance ที่รับมาเป็นค่าเริ่มต้น
   const [isRolling, setIsRolling] = useState<boolean>(false) // สถานะการหมุนลูกเต๋า
+
+  const { execute: updateBet } = useServerAction(betTransaction)
 
   // ปรับให้ฟังก์ชัน rollDice คืนค่าเป็น array ของตัวเลข
   const rollDice = (): number[] => {
@@ -69,45 +85,63 @@ const HiloGame: React.FC<HiloGameProps> = ({ balance, minigameId }) => {
         setGameMessage(
           `คุณชนะ! ผลการทอยลูกเต๋าคือ ${sum} และคุณได้รับผลตอบแทน x${multiplier}`
         )
+        updateBet({
+          betAmount: bet,
+          betResult: "win",
+          minigameId: minigameId,
+          multiplier: multiplier,
+        })
       } else {
         setPlayerBalance(playerBalance - bet)
         setGameMessage(`คุณแพ้! ผลการทอยลูกเต๋าคือ ${sum}`)
+        updateBet({
+          betAmount: bet,
+          betResult: "loss",
+          minigameId: minigameId,
+          multiplier: -1,
+        })
       }
     }, 1000) // ตั้งเวลา 1 วินาทีให้ลูกเต๋าหมุน
   }
 
   return (
-    <div className="flex flex-col items-center p-4">
-      <h1 className="text-2xl font-bold mb-4">เกม Hilo (High-Low)</h1>
-      <div className="mb-4">
-        <label className="block mb-2">จำนวนเงินเดิมพัน:</label>
-        <input
+    <div className="flex flex-col items-center p-4 gap-4">
+      <h1 className="text-3xl font-bold font-alagard">Hilo (High-Low)</h1>
+      <div className="text-lg">
+        Balance: <NumberFlow value={playerBalance} /> บาท
+      </div>
+      <div className="flex gap-4 flex-row w-fit items-center justify-center">
+        <p className="w-full">Bet Amount : </p>
+        <Input
           type="number"
           value={bet}
           onChange={(e) => setBet(Number(e.target.value))}
-          className="p-2 border border-gray-300 rounded-md"
+          className="w-full"
         />
+        <Button onClick={() => setBet(playerBalance)} className="w-full">
+          All In
+        </Button>
       </div>
 
-      <div className="mb-4">
-        <label className="block mb-2">ทาย High, Low หรือ 11:</label>
-        <select
-          value={guess}
-          onChange={(e) => setGuess(e.target.value)}
-          className="p-2 border border-gray-300 rounded-md"
-        >
-          <option value="low">Low (3-10)</option>
-          <option value="eleven">11</option>
-          <option value="high">High (12-18)</option>
-        </select>
+      <div className="flex flex-row gap- items-center">
+        <Select onValueChange={(value) => setGuess(value)}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select bet types" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Bet Types</SelectLabel>
+              <SelectItem value="low">Low (1-10)</SelectItem>
+              <SelectItem value="eleven">11</SelectItem>
+              <SelectItem value="high">High (12-18)</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       </div>
 
-      <button
-        onClick={handleBet}
-        className="p-2 bg-blue-500 text-white rounded-md mb-4"
-      >
-        ทอยลูกเต๋า
-      </button>
+      <Button onClick={handleBet} variant="destructive">
+        Cook the dice!
+      </Button>
 
       {diceResults.length > 0 && (
         <div className="mb-4">
@@ -134,8 +168,6 @@ const HiloGame: React.FC<HiloGameProps> = ({ balance, minigameId }) => {
       )}
 
       <div className="text-xl font-semibold mb-4">{gameMessage}</div>
-
-      <div className="text-lg">ยอดเงินของคุณ: {playerBalance} บาท</div>
     </div>
   )
 }
