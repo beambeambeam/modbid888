@@ -60,7 +60,7 @@ export default function SignUp() {
         title: "Let's Go!",
         description: "Enjoy your session",
       })
-      redirect("/minigames/first-time")
+      redirect("/first-time")
     },
   })
 
