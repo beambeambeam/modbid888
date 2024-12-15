@@ -32,7 +32,7 @@ const Wheel: React.FC = () => {
 
     setCoins((prev) => prev - 1)
     setIsSpinning(true)
-    playSound("/sounds/spin.mp3")
+    playSound("/sounds/SpinningWheel.mp3")
 
     // สุ่มรางวัลล่วงหน้า
     const prizeIndex: number = getWeightedRandomIndex(
@@ -78,7 +78,7 @@ const Wheel: React.FC = () => {
           default:
             break
         }
-        playSound("/sounds/result.mp3")
+        playSound("/sounds/win.mp3")
       } else {
         const progress = elapsed / 7000
         const easeOutRotation = totalRotation * (1 - Math.pow(1 - progress, 3)) // ลดความเร็วตอนหยุด
