@@ -1,148 +1,145 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useRef, useState } from "react"
+import { Coins, Volume2, VolumeX } from "lucide-react"
 
-import Reel from "./Reel"
+const SYMBOLS = ["💎", "👑", "💰", "🎰", "⭐"]
+const SPIN_DURATION = 2000
+const BET_AMOUNTS = [10, 50, 100, 500]
 
-const symbols = ["🍒", "🍋", "🍊", "🍇", "⭐", "🔔"]
+export default function SlotMachine() {
+  const [reels, setReels] = useState(["💎", "💎", "💎"])
+  const [balance, setBalance] = useState(1000)
+  const [spinning, setSpinning] = useState(false)
+  const [betAmount, setBetAmount] = useState(BET_AMOUNTS[0])
+  const [muted, setMuted] = useState(false)
+  const [lastWin, setLastWin] = useState(0)
 
-const rewards: { [key: string]: number } = {
-  "🍒": 100,
-  "🍋": 150,
-  "🍊": 200,
-  "🍇": 250,
-  "⭐": 500,
-  "🔔": 1000,
-}
+  const spinSound = useRef(new Audio("/sounds/spin.mp3"))
+  const winSound = useRef(new Audio("/sounds/win.mp3"))
+  const loseSound = useRef(new Audio("/sounds/lose.mp3"))
 
-const SlotMachine: React.FC = () => {
-  const [reelsSet1, setReelsSet1] = useState<string[]>(["", "", ""])
-  const [reelsSet2, setReelsSet2] = useState<string[]>(["", "", ""])
-  const [reelsSet3, setReelsSet3] = useState<string[]>(["", "", ""])
-  const [isSpinning, setIsSpinning] = useState(false)
-  const [message, setMessage] = useState("")
-  const [balance, setBalance] = useState(1000) // Starting balance
-
-  const spinReels = () => {
-    if (balance < 100) {
-      setMessage("Not enough balance to spin!")
-      return
+  const playSound = (sound: HTMLAudioElement) => {
+    if (!muted) {
+      sound.currentTime = 0
+      sound.play()
     }
-
-    setIsSpinning(true)
-    setMessage("")
-    setBalance((prev) => prev - 100) // Deduct 100 coins for spinning
-
-    // Generate random reels for each set
-    const newReelsSet1 = Array(3)
-      .fill("")
-      .map(() => symbols[Math.floor(Math.random() * symbols.length)])
-
-    const newReelsSet2 = Array(3)
-      .fill("")
-      .map(() => symbols[Math.floor(Math.random() * symbols.length)])
-
-    const newReelsSet3 = Array(3)
-      .fill("")
-      .map(() => symbols[Math.floor(Math.random() * symbols.length)])
-
-    // Simulate spinning delay
-    setTimeout(() => {
-      setReelsSet1(newReelsSet1)
-      setReelsSet2(newReelsSet2)
-      setReelsSet3(newReelsSet3)
-      setIsSpinning(false)
-      checkWin(newReelsSet1, newReelsSet2, newReelsSet3)
-    }, 1000)
   }
 
-  const checkWin = (set1: string[], set2: string[], set3: string[]) => {
-    let totalReward = 0
+  const spin = () => {
+    if (spinning || balance < betAmount) return
 
-    // Check horizontal matches
-    const isSet1Win = new Set(set1).size === 1
-    const isSet2Win = new Set(set2).size === 1
-    const isSet3Win = new Set(set3).size === 1
+    setSpinning(true)
+    playSound(spinSound.current)
+    setBalance((prev) => prev - betAmount)
 
-    if (isSet1Win) totalReward += rewards[set1[0]]
-    if (isSet2Win) totalReward += rewards[set2[0]]
-    if (isSet3Win) totalReward += rewards[set3[0]]
+    // Simulate spinning animation
+    const intervalId = setInterval(() => {
+      setReels((prev) =>
+        prev.map(() => SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)])
+      )
+    }, 100)
 
-    // Check vertical matches
-    const isVertical1Win = set1[0] === set2[0] && set1[0] === set3[0]
-    const isVertical2Win = set1[1] === set2[1] && set1[1] === set3[1]
-    const isVertical3Win = set1[2] === set2[2] && set1[2] === set3[2]
+    setTimeout(() => {
+      clearInterval(intervalId)
+      const finalReels = Array(3)
+        .fill(0)
+        .map(() => SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)])
+      setReels(finalReels)
+      checkWin(finalReels)
+      setSpinning(false)
+    }, SPIN_DURATION)
+  }
 
-    if (isVertical1Win) totalReward += rewards[set1[0]]
-    if (isVertical2Win) totalReward += rewards[set1[1]]
-    if (isVertical3Win) totalReward += rewards[set1[2]]
-
-    // Check diagonal matches
-    const isDiagonal1Win = set1[0] === set2[1] && set1[0] === set3[2]
-    const isDiagonal2Win = set1[2] === set2[1] && set1[2] === set3[0]
-
-    if (isDiagonal1Win) totalReward += rewards[set1[0]]
-    if (isDiagonal2Win) totalReward += rewards[set1[2]]
-
-    if (totalReward > 0) {
-      setMessage(`🎉 You Won ${totalReward} mods! 🎉`)
-      setBalance((prev) => prev + totalReward)
+  const checkWin = (results: string[]) => {
+    if (results[0] === results[1] && results[1] === results[2]) {
+      const winAmount = betAmount * 10
+      setBalance((prev) => prev + winAmount)
+      setLastWin(winAmount)
+      playSound(winSound.current)
+    } else if (results[0] === results[1] || results[1] === results[2]) {
+      const winAmount = betAmount * 2
+      setBalance((prev) => prev + winAmount)
+      setLastWin(winAmount)
+      playSound(winSound.current)
     } else {
-      setMessage("Try Again!")
+      setLastWin(0)
+      playSound(loseSound.current)
     }
   }
 
   return (
-    <div className="p-8 bg-gray-300 text-center font-sans rounded-lg max-w-lg mx-auto">
-      <h2 className="text-2xl font-semibold mb-4">Balance: {balance} mods</h2>
-      <div className="flex justify-center space-x-4 mb-6">
-        <div className="flex flex-col items-center">
-          {reelsSet1.map((symbol, index) => (
-            <Reel
-              key={`set1-${index}`}
-              symbol={symbol}
-              isSpinning={isSpinning}
-            />
-          ))}
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-gray-900 to-black text-white flex items-center justify-center">
+      <div className="max-w-4xl w-full mx-4">
+        <div className="bg-black/50 backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-purple-500/20">
+          <div className="flex justify-between items-center mb-8">
+            <div className="flex items-center gap-2">
+              <Coins className="w-6 h-6 text-yellow-500" />
+              <span className="text-2xl font-bold">{balance} MODS</span>
+            </div>
+            <button
+              onClick={() => setMuted(!muted)}
+              className="p-2 rounded-full hover:bg-white/10 transition-colors"
+            >
+              {muted ? <VolumeX /> : <Volume2 />}
+            </button>
+          </div>
+
+          <div className="bg-gradient-to-b from-purple-800/50 to-purple-900/50 rounded-xl p-6 mb-8">
+            <div className="flex justify-center gap-4 mb-8">
+              {reels.map((symbol, index) => (
+                <div
+                  key={index}
+                  className={`w-32 h-32 flex items-center justify-center text-6xl 
+                    bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg border-2 
+                    border-purple-500/30 shadow-lg ${
+                      spinning ? "animate-bounce" : ""
+                    }`}
+                >
+                  {symbol}
+                </div>
+              ))}
+            </div>
+
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex gap-2">
+                {BET_AMOUNTS.map((amount) => (
+                  <button
+                    key={amount}
+                    onClick={() => setBetAmount(amount)}
+                    className={`px-4 py-2 rounded-lg transition-all ${
+                      betAmount === amount
+                        ? "bg-purple-600 text-white"
+                        : "bg-purple-900/50 hover:bg-purple-800/50"
+                    }`}
+                  >
+                    {amount} MODS
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={spin}
+                disabled={spinning || balance < betAmount}
+                className={`w-full max-w-md py-4 px-8 text-xl font-bold rounded-lg 
+                  transition-all transform hover:scale-105 ${
+                    spinning || balance < betAmount
+                      ? "bg-gray-700 cursor-not-allowed"
+                      : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500"
+                  }`}
+              >
+                {spinning ? "Spinning..." : "SPIN"}
+              </button>
+            </div>
+          </div>
+
+          {lastWin > 0 && (
+            <div className="text-center text-2xl font-bold text-yellow-500 animate-pulse">
+              You won {lastWin} MODS!
+            </div>
+          )}
         </div>
-        <div className="flex flex-col items-center">
-          {reelsSet2.map((symbol, index) => (
-            <Reel
-              key={`set2-${index}`}
-              symbol={symbol}
-              isSpinning={isSpinning}
-            />
-          ))}
-        </div>
-        <div className="flex flex-col items-center">
-          {reelsSet3.map((symbol, index) => (
-            <Reel
-              key={`set3-${index}`}
-              symbol={symbol}
-              isSpinning={isSpinning}
-            />
-          ))}
-        </div>
-      </div>
-      <button
-        onClick={spinReels}
-        disabled={isSpinning || balance < 100}
-        className={`py-2 px-6 rounded-lg text-xl font-bold w-full bg-blue-500 hover:bg-blue-600 ${isSpinning || balance < 100 ? "opacity-50 cursor-not-allowed" : ""}`}
-      >
-        {isSpinning ? "Spinning..." : "Spin"}
-      </button>
-      {message && <p className="mt-4 text-xl text-blue-500">{message}</p>}
-      <div className="mt-6 text-sm">
-        <p>Spin 1 use 100 mods</p>
-        <p>🍒🍒🍒 = 100 mods</p>
-        <p>🍋🍋🍋 = 150 mods</p>
-        <p>🍊🍊🍊 = 200 mods</p>
-        <p>🍇🍇🍇 = 250 mods</p>
-        <p>⭐⭐⭐ = 500 mods</p>
-        <p>🔔🔔🔔 = 1000 mods</p>
       </div>
     </div>
   )
 }
-
-export default SlotMachine
