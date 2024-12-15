@@ -196,6 +196,22 @@ const Wheel: React.FC = () => {
       {result && !isSpinning && (
         <div className="text-lg font-bold">Result: {result}</div>
       )}
+
+      {/* เพิ่มคำอธิบาย rate การออก */}
+      <div className="mt-4 text-center">
+        <h3 className="text-lg font-bold">Win Rates:</h3>
+        <ul className="list-none">
+          {numbers.map((number, index) => (
+            <li key={index} className="text-sm">
+              <span
+                className="inline-block w-4 h-4 rounded-full"
+                style={{ backgroundColor: number.color }}
+              ></span>{" "}
+              {number.label}: {Math.round(number.probability * 100)}%
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   )
 }
