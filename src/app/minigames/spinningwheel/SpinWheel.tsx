@@ -20,11 +20,19 @@ const Wheel: React.FC = () => {
 
   const segmentAngle: number = 360 / numbers.length
 
+  const playSound = (url: string): void => {
+    const audio = new Audio(url)
+    audio.play().catch((error) => {
+      console.error("Error playing sound:", error)
+    })
+  }
+
   const spinWheel = (): void => {
     if (coins <= 0 || isSpinning) return
 
     setCoins((prev) => prev - 1)
     setIsSpinning(true)
+    playSound("/sounds/spin.mp3")
 
     // สุ่มรางวัลล่วงหน้า
     const prizeIndex: number = getWeightedRandomIndex(
@@ -70,6 +78,7 @@ const Wheel: React.FC = () => {
           default:
             break
         }
+        playSound("/sounds/result.mp3")
       } else {
         const progress = elapsed / 7000
         const easeOutRotation = totalRotation * (1 - Math.pow(1 - progress, 3)) // ลดความเร็วตอนหยุด
@@ -171,18 +180,18 @@ const Wheel: React.FC = () => {
         {isSpinning ? "Spinning..." : coins > 0 ? "Spin" : "Out of Coins"}
       </button>
       <button
-        onClick={buySingleCoinWithMod}
-        className="px-4 py-2 bg-green-500 text-white rounded disabled:opacity-50"
-        disabled={mod < 100 || isSpinning}
-      >
-        Buy 1 Coin with 100 Mod
-      </button>
-      <button
         onClick={buyCoinsWithMod}
         className="px-4 py-2 bg-green-500 text-white rounded disabled:opacity-50"
         disabled={mod < 500 || isSpinning}
       >
         Buy 5 Coins with 500 Mod
+      </button>
+      <button
+        onClick={buySingleCoinWithMod}
+        className="px-4 py-2 bg-green-500 text-white rounded disabled:opacity-50"
+        disabled={mod < 100 || isSpinning}
+      >
+        Buy 1 Coin with 100 Mod
       </button>
       {result && !isSpinning && (
         <div className="text-lg font-bold">Result: {result}</div>
