@@ -29,6 +29,9 @@ export const metadata: Metadata = {
   title: "Modbid888",
   description: "Best place for bid",
   keywords: ["modbid888", "bid", "modbid"],
+  icons: {
+    icon: "/static/favicon.ico",
+  },
 }
 
 export default function RootLayout({
