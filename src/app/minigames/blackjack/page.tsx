@@ -1,15 +1,23 @@
-import { redirect } from "next/navigation"
+"use client"
 
+import Loading from "~/app/minigames/_components/loading"
 import Blackjack from "~/app/minigames/blackjack/blackjack"
 import MinigameTable from "~/app/minigames/table"
 import { Separator } from "~/components/ui/separator"
 import { getCurrentBalanceAction } from "~/hooks/bet/actions"
+import { useServerActionQuery } from "~/hooks/server-action-hooks"
 
-async function BlackjackPage() {
-  const [balance] = await getCurrentBalanceAction()
+function BlackjackPage() {
+  const { data: balance, isLoading } = useServerActionQuery(
+    getCurrentBalanceAction,
+    {
+      queryKey: ["balance"],
+      input: undefined,
+    }
+  )
 
-  if (balance === null || balance === undefined) {
-    return redirect("/")
+  if (balance === null || balance === undefined || isLoading) {
+    return <Loading />
   }
 
   return (
