@@ -3,6 +3,7 @@ import posthog from "posthog-js"
 
 import Banner from "~/components/banner"
 import { Button } from "~/components/ui/button"
+import { RainbowButton } from "~/components/ui/rainbow-button"
 import { isAllowRole } from "~/lib/roles"
 
 export default async function Home() {
@@ -14,30 +15,26 @@ export default async function Home() {
         <Banner />
       </div>
       <div className="text-foreground w-full flex items-center h-screen px-32">
-        <div className="flex flex-col gap-6">
-          <h1 className="font-alagard text-6xl">Modbid888</h1>
+        <div className="flex flex-col gap-6 items-center w-full">
+          <h1 className="font-alagard text-[9rem] -rotate-2">Modbid888</h1>
           <div className="flex flex-col gap-3">
-            <div className="flex flex-row gap-3 text-4xl items-center">
-              How good is your{" "}
+            <div className="text-2xl flex gap-6 items-center">
+              How good is your luck?
               <h2 className="text-5xl text-red-600 font-alagard">Luck?</h2>
+              test it here?
             </div>
-            <h2 className="flex flex-row gap-3 text-4xl">Test it here.</h2>
           </div>
           <div className="flex flex-row gap-4">
             {(await isAllowRole(["admin", "member"])) ? (
               <Link href="/minigames">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="font-alagard text-xl"
-                >
+                <RainbowButton className="font-alagard text-xl">
                   Play a game!
-                </Button>
+                </RainbowButton>
               </Link>
             ) : (
               <>
                 <Link href="/sign-in">
-                  <Button size="sm">Let&apos;s go</Button>
+                  <RainbowButton>Let&apos;s go</RainbowButton>
                 </Link>
                 <Link href="/sign-up">
                   <Button size="sm" variant="ghost">

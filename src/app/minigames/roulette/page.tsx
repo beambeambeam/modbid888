@@ -1,15 +1,25 @@
-import React from "react"
-import { redirect } from "next/navigation"
+"use client"
 
+import React from "react"
+
+import Loading from "~/app/minigames/_components/loading"
 import Roulette from "~/app/minigames/roulette/roulette"
 import { getCurrentBalanceAction } from "~/hooks/bet/actions"
+import { useServerActionQuery } from "~/hooks/server-action-hooks"
 
-async function RoulettePage() {
-  const [balance] = await getCurrentBalanceAction()
+function RoulettePage() {
+  const { data: balance, isLoading } = useServerActionQuery(
+    getCurrentBalanceAction,
+    {
+      queryKey: ["balance"],
+      input: undefined,
+    }
+  )
 
-  if (balance === null || balance === undefined) {
-    return redirect("/")
+  if (balance === null || balance === undefined || isLoading) {
+    return <Loading />
   }
+
   return (
     <div>
       <Roulette balance={balance} minigameId={2} />
