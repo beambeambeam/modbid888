@@ -1,7 +1,16 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from "react"
+import React, { useRef, useState } from "react"
+import NumberFlow from "@number-flow/react"
 import { Coins, Volume2, VolumeX } from "lucide-react"
+import { useServerAction } from "zsa-react"
+
+import { Button } from "~/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
+import { Input } from "~/components/ui/input"
+import { betTransaction } from "~/hooks/bet/actions"
+
+import { MinigameProps } from "../actions"
 
 const SYMBOLS = [
   { symbol: "🍒", weight: 5 },
@@ -27,9 +36,12 @@ const SYMBOL_VALUES: { [key: string]: number } = {
 
 const SPIN_DURATION = 2000
 
-export default function SlotMachine() {
+export default function SlotMachine({
+  balance: apiBalance,
+  minigameId,
+}: MinigameProps) {
   const [reels, setReels] = useState(["8️⃣", "8️⃣", "8️⃣"])
-  const [balance, setBalance] = useState(10000)
+  const [balance, setBalance] = useState(apiBalance)
   const [spinning, setSpinning] = useState(false)
   const [betAmount, setBetAmount] = useState(100)
   const [muted, setMuted] = useState(false)
@@ -37,23 +49,11 @@ export default function SlotMachine() {
   const [errorMessage, setErrorMessage] = useState("")
   const [multiplier, setMultiplier] = useState(1)
 
+  const { execute: updateBet } = useServerAction(betTransaction)
+
   const spinSound = useRef(new Audio("/sounds/spin.mp3"))
   const winSound = useRef(new Audio("/sounds/win.mp3"))
   const loseSound = useRef(new Audio("/sounds/lose.mp3"))
-
-  useEffect(() => {
-    const fetchBalance = async () => {
-      try {
-        const response = await fetch("/api/balance")
-        const data = await response.json()
-        setBalance(data.balance)
-      } catch (error) {
-        console.error("Error fetching balance:", error)
-      }
-    }
-
-    fetchBalance()
-  }, [])
 
   const playSound = (sound: HTMLAudioElement) => {
     if (!muted) {
@@ -109,112 +109,142 @@ export default function SlotMachine() {
       setLastWin(winAmount)
       setMultiplier(SYMBOL_VALUES[results[0]])
       playSound(winSound.current)
+
+      updateBet({
+        minigameId: minigameId,
+        betAmount: betAmount,
+        betResult: "win",
+        multiplier: multiplier,
+      })
     } else {
       setLastWin(0)
       setMultiplier(1)
       playSound(loseSound.current)
+
+      updateBet({
+        minigameId: minigameId,
+        betAmount: betAmount,
+        betResult: "loss",
+        multiplier: -1,
+      })
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-gray-900 to-black text-white flex items-center justify-center">
+    <div className=" bg-gradient-to-br text-foreground flex items-center justify-center">
       <div className="max-w-4xl w-full mx-4">
-        <div className="bg-black/50 backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-purple-500/20">
-          <div className="flex justify-between items-center mb-8">
-            <div className="flex items-center gap-2">
-              <Coins className="w-6 h-6 text-yellow-500" />
-              <span className="text-2xl font-bold">{balance} balance</span>
+        <Card className="p-6">
+          <CardHeader className="flex justify-between">
+            <CardTitle className="font-alagard text-4xl font-normal">
+              Slot Machine.
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex justify-between items-center mb-8">
+              <div className="flex items-center gap-2">
+                <Coins className="w-6 h-6 text-yellow-500" />
+                <NumberFlow className="text-2xl font-bold" value={balance} />
+              </div>
+              <Button
+                size="icon"
+                onClick={() => setMuted(!muted)}
+                className="p-2 rounded-full hover:bg-white/10 transition-colors"
+              >
+                {muted ? <VolumeX /> : <Volume2 />}
+              </Button>
             </div>
-            <button
-              onClick={() => setMuted(!muted)}
-              className="p-2 rounded-full hover:bg-white/10 transition-colors"
-            >
-              {muted ? <VolumeX /> : <Volume2 />}
-            </button>
-          </div>
 
-          <div className="bg-gradient-to-b from-purple-800/50 to-purple-900/50 rounded-xl p-6 mb-8">
-            <div className="flex justify-center gap-4 mb-8">
-              {reels.map((symbol, index) => (
-                <div
-                  key={index}
-                  className={`w-32 h-32 flex items-center justify-center text-6xl 
-                    bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg border-2 
+            <div className="bg-gradient-to-b from-purple-800/50 to-purple-900/50 rounded-xl p-6 mb-8">
+              <div className="flex justify-center gap-4 mb-8">
+                {reels.map((symbol, index) => (
+                  <div
+                    key={index}
+                    className={`w-32 h-32 flex items-center justify-center text-6xl
+                    bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg border-2
                     border-purple-500/30 shadow-lg ${spinning ? "animate-bounce" : ""}`}
-                >
-                  {symbol}
-                </div>
-              ))}
-            </div>
-
-            <div className="flex flex-col items-center gap-4">
-              <div className="flex items-center gap-2 mb-4">
-                <input
-                  type="number"
-                  min="1"
-                  value={betAmount}
-                  onChange={(e) => setBetAmount(Number(e.target.value))}
-                  className="px-4 py-2 text-xl text-black rounded-lg w-32"
-                />
-                <span className="text-xl">bet amount</span>
+                  >
+                    {symbol}
+                  </div>
+                ))}
               </div>
 
-              <button
-                onClick={spin}
-                disabled={spinning || balance < betAmount}
-                className={`w-full max-w-md py-4 px-8 text-xl font-bold rounded-lg 
+              <div className="flex flex-col items-center gap-4">
+                <p>Bet amount</p>
+                <div className="flex items-center gap-2 mb-4">
+                  <Input
+                    className="bg-background"
+                    type="number"
+                    min="1"
+                    value={betAmount}
+                    onChange={(e) => setBetAmount(Number(e.target.value))}
+                  />
+                  <Button
+                    onClick={() => setBetAmount(balance)}
+                    className="bg-gradient-to-r from-green-500 to-green-700 hover:from-green-400 hover:to-green-600 text-white font-bold py-2 px-4 rounded"
+                  >
+                    All In
+                  </Button>
+                </div>
+
+                <Button
+                  onClick={spin}
+                  disabled={spinning || balance < betAmount}
+                  className={`w-full max-w-md py-4 px-8 text-xl font-bold rounded-lg
                   transition-all transform hover:scale-105 ${
                     spinning || balance < betAmount
                       ? "bg-gray-700 cursor-not-allowed"
                       : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500"
                   }`}
-              >
-                {spinning ? "Spinning..." : "SPIN"}
-              </button>
+                >
+                  {spinning ? "Spinning..." : "SPIN"}
+                </Button>
+              </div>
             </div>
-          </div>
 
-          {lastWin > 0 && (
-            <div className="text-center text-2xl font-bold text-yellow-500 animate-pulse">
-              You won {lastWin} credit! (Multiplier: x{multiplier})
-            </div>
-          )}
+            {lastWin > 0 && (
+              <div className="text-center text-2xl font-bold text-yellow-500 animate-pulse">
+                You won {lastWin} credit! (Multiplier: x{multiplier})
+              </div>
+            )}
 
-          {errorMessage && (
-            <div className="text-red-500 mt-4 text-center">{errorMessage}</div>
-          )}
-          <div className="p-6 bg-gradient-to-br from-purple-800 via-gray-800 to-black text-white rounded-xl shadow-lg">
-            <h2 className="text-2xl font-bold text-center mb-4">
-              Multiplier Values
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              <p className="text-sm md:text-base lg:text-lg text-center">
-                🍒 - x5 <span className="block text-xs">Rate 1.97%</span>
-              </p>
-              <p className="text-sm md:text-base lg:text-lg text-center">
-                🍋 - x10 <span className="block text-xs">Rate 1.01%</span>
-              </p>
-              <p className="text-sm md:text-base lg:text-lg text-center">
-                🍉 - x15 <span className="block text-xs">Rate 0.43%</span>
-              </p>
-              <p className="text-sm md:text-base lg:text-lg text-center">
-                🍇 - x20 <span className="block text-xs">Rate 0.13%</span>
-              </p>
-              <p className="text-sm md:text-base lg:text-lg text-center">
-                🍓 - x25 <span className="block text-xs">Rate 0.13%</span>
-              </p>
-              <p className="text-sm md:text-base lg:text-lg text-center">
-                🍊 - x30 <span className="block text-xs">Rate 0.02%</span>
-              </p>
-              <p className="text-sm md:text-base lg:text-lg text-center">
-                🍎 - x35 <span className="block text-xs">Rate 0.02%</span>
-              </p>
-              <p className="text-sm md:text-base lg:text-lg text-center">
-                8️⃣ - x100 <span className="block text-xs">Rate 0.002%</span>
-              </p>
+            {errorMessage && (
+              <div className="text-red-500 mt-4 text-center">
+                {errorMessage}
+              </div>
+            )}
+            <div className="p-6 bg-gradient-to-br from-purple-800 via-gray-800 to-black text-white rounded-xl shadow-lg">
+              <h2 className="text-2xl font-bold text-center mb-4">
+                Multiplier Values
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <p className="text-sm md:text-base lg:text-lg text-center">
+                  🍒 - x5 <span className="block text-xs">Rate 1.97%</span>
+                </p>
+                <p className="text-sm md:text-base lg:text-lg text-center">
+                  🍋 - x10 <span className="block text-xs">Rate 1.01%</span>
+                </p>
+                <p className="text-sm md:text-base lg:text-lg text-center">
+                  🍉 - x15 <span className="block text-xs">Rate 0.43%</span>
+                </p>
+                <p className="text-sm md:text-base lg:text-lg text-center">
+                  🍇 - x20 <span className="block text-xs">Rate 0.13%</span>
+                </p>
+                <p className="text-sm md:text-base lg:text-lg text-center">
+                  🍓 - x25 <span className="block text-xs">Rate 0.13%</span>
+                </p>
+                <p className="text-sm md:text-base lg:text-lg text-center">
+                  🍊 - x30 <span className="block text-xs">Rate 0.02%</span>
+                </p>
+                <p className="text-sm md:text-base lg:text-lg text-center">
+                  🍎 - x35 <span className="block text-xs">Rate 0.02%</span>
+                </p>
+                <p className="text-sm md:text-base lg:text-lg text-center">
+                  8️⃣ - x100 <span className="block text-xs">Rate 0.002%</span>
+                </p>
+              </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
