@@ -132,7 +132,7 @@ const Wheel: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center space-y-4">
-      <div className="text-lg font-bold">Mod: {mod}</div>
+      <div className="text-lg font-bold">Balance: {mod}</div>
       <div className="text-lg font-bold">Coins: {coins}</div>
       <div className="text-xl font-bold">▼</div>
 
@@ -184,14 +184,14 @@ const Wheel: React.FC = () => {
         className="px-4 py-2 bg-green-500 text-white rounded disabled:opacity-50"
         disabled={mod < 500 || isSpinning}
       >
-        Buy 5 Coins with 500 Mod
+        Buy 5 Coins with 500 Balance
       </button>
       <button
         onClick={buySingleCoinWithMod}
         className="px-4 py-2 bg-green-500 text-white rounded disabled:opacity-50"
         disabled={mod < 100 || isSpinning}
       >
-        Buy 1 Coin with 100 Mod
+        Buy 1 Coin with 100 Balance
       </button>
       {result && !isSpinning && (
         <div className="text-lg font-bold">Result: {result}</div>
