@@ -1,16 +1,24 @@
+"use client"
+
 import React from "react"
-import { redirect } from "next/navigation"
 
+import Loading from "~/app/minigames/_components/loading"
+import SlotMachine from "~/app/minigames/slotmachine/SlotMachine"
+import MinigameTable from "~/app/minigames/table"
 import { getCurrentBalanceAction } from "~/hooks/bet/actions"
+import { useServerActionQuery } from "~/hooks/server-action-hooks"
 
-import MinigameTable from "../table"
-import SlotMachine from "./SlotMachine"
+const SlotPage: React.FC = () => {
+  const { data: balance, isLoading } = useServerActionQuery(
+    getCurrentBalanceAction,
+    {
+      queryKey: ["balance"],
+      input: undefined,
+    }
+  )
 
-const SlotPage: React.FC = async () => {
-  const [balance] = await getCurrentBalanceAction()
-
-  if (balance === null || balance === undefined) {
-    return redirect("/")
+  if (balance === null || balance === undefined || isLoading) {
+    return <Loading />
   }
 
   return (
