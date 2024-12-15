@@ -3,6 +3,7 @@ import posthog from "posthog-js"
 
 import Banner from "~/components/banner"
 import { Button } from "~/components/ui/button"
+import { RainbowButton } from "~/components/ui/rainbow-button"
 import { isAllowRole } from "~/lib/roles"
 
 export default async function Home() {
@@ -26,18 +27,14 @@ export default async function Home() {
           <div className="flex flex-row gap-4">
             {(await isAllowRole(["admin", "member"])) ? (
               <Link href="/minigames">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="font-alagard text-xl"
-                >
+                <RainbowButton className="font-alagard text-xl">
                   Play a game!
-                </Button>
+                </RainbowButton>
               </Link>
             ) : (
               <>
                 <Link href="/sign-in">
-                  <Button size="sm">Let&apos;s go</Button>
+                  <RainbowButton>Let&apos;s go</RainbowButton>
                 </Link>
                 <Link href="/sign-up">
                   <Button size="sm" variant="ghost">
