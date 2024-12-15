@@ -1,6 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import { CircleHelpIcon } from "lucide-react"
+import { ArrowRight, CircleHelpIcon } from "lucide-react"
 
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "~/components/ui/card"
@@ -60,7 +60,12 @@ function GameCard({ title, desc, tips, img, disabled }: GameCardProps) {
         ) : (
           <CardFooter>
             <Link href={`/minigames/${title}`}>
-              <Button variant="outline" className="font-alagard capitalize">
+              <Button
+                variant="expandIcon"
+                className="font-alagard capitalize"
+                Icon={() => <ArrowRight className="h-4 w-4" />}
+                iconPlacement="right"
+              >
                 Play {title}!
               </Button>
             </Link>

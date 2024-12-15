@@ -136,7 +136,7 @@ function ChangeDisplayName({ displayName }: { displayName: string }) {
 
   return (
     <Dialog>
-      <DialogTrigger className={buttonVariants({ variant: "outline" })}>
+      <DialogTrigger className={buttonVariants({ variant: "default" })}>
         Change Display Name
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -227,7 +227,7 @@ function ChangePassword() {
 
   return (
     <Dialog>
-      <DialogTrigger className={buttonVariants({ variant: "outline" })}>
+      <DialogTrigger className={buttonVariants({ variant: "default" })}>
         Change Password
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
