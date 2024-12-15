@@ -6,8 +6,9 @@ const Wheel: React.FC = () => {
   const [result, setResult] = useState<string | null>(null)
   const [coins, setCoins] = useState<number>(0)
   const [mod, setMod] = useState<number>(500)
-  const [rotation, setRotation] = useState<number>(0) // หมุนปัจจุบัน
+  const [rotation, setRotation] = useState<number>(0)
   const [isSpinning, setIsSpinning] = useState<boolean>(false)
+  const [showInstructions, setShowInstructions] = useState<boolean>(false)
 
   const numbers = [
     { label: "Free 1 coin", color: "#ff9999", probability: 0.2 },
@@ -34,17 +35,15 @@ const Wheel: React.FC = () => {
     setIsSpinning(true)
     playSound("/sounds/SpinningWheel.mp3")
 
-    // สุ่มรางวัลล่วงหน้า
     const prizeIndex: number = getWeightedRandomIndex(
       numbers.map((num) => num.probability)
     )
     const targetResult = numbers[prizeIndex].label
     setResult(targetResult)
 
-    // คำนวณมุมเป้าหมาย (ตรงกลางเนื้อเค้ก)
     const offset = 90
     const targetAngle = prizeIndex * segmentAngle + segmentAngle / 2 + offset
-    const totalRotation = 360 * 5 + (360 - targetAngle) // หมุน 5 รอบและหยุดตรงเป้าหมาย
+    const totalRotation = 360 * 5 + (360 - targetAngle)
 
     const startTime = Date.now()
 
@@ -52,10 +51,9 @@ const Wheel: React.FC = () => {
       const elapsed = Date.now() - startTime
       if (elapsed >= 7000) {
         clearInterval(spinInterval)
-        setRotation(totalRotation % 360) // ตั้งค่าหยุดที่มุมสุดท้าย
+        setRotation(totalRotation % 360)
         setIsSpinning(false)
 
-        // เพิ่มรางวัลหลังจากหมุนหยุด
         switch (targetResult) {
           case "Free 1 coin":
             setCoins((prev) => prev + 1)
@@ -81,10 +79,10 @@ const Wheel: React.FC = () => {
         playSound("/sounds/win.mp3")
       } else {
         const progress = elapsed / 7000
-        const easeOutRotation = totalRotation * (1 - Math.pow(1 - progress, 3)) // ลดความเร็วตอนหยุด
+        const easeOutRotation = totalRotation * (1 - Math.pow(1 - progress, 3))
         setRotation(easeOutRotation)
       }
-    }, 1000 / 60) // อัปเดตทุก 16.67ms (ประมาณ 60 FPS)
+    }, 1000 / 60)
   }
 
   const buyCoinsWithMod = () => {
@@ -135,6 +133,31 @@ const Wheel: React.FC = () => {
       <div className="text-lg font-bold">Balance: {mod}</div>
       <div className="text-lg font-bold">Coins: {coins}</div>
       <div className="text-xl font-bold">▼</div>
+
+      {/* ปุ่ม How to Play */}
+      <button
+        onClick={() => setShowInstructions(true)}
+        className="px-4 py-2 bg-gray-800 text-white rounded-lg"
+      >
+        How to Play
+      </button>
+
+      {/* ช่องแสดงคำแนะนำ */}
+      {showInstructions && (
+        <div className="mt-4 p-4 bg-gray-200 text-black rounded-lg">
+          <p>How to Play:</p>
+          <p>
+            Spin the wheel by pressing the Spin button. You can buy coins with
+            balance using the options below.
+          </p>
+          <button
+            onClick={() => setShowInstructions(false)}
+            className="mt-2 px-4 py-2 bg-red-500 text-white rounded-lg"
+          >
+            Close
+          </button>
+        </div>
+      )}
 
       <svg
         className="w-72 h-72"

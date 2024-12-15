@@ -280,6 +280,21 @@ const RouletteGame: React.FC<MinigameProps> = ({
         <h1>Betting Area</h1>
         <h2>
           Balance: <NumberFlow value={balance} />
+          {/* How to Play Section */}
+          <div className="mb-4">
+            <h2 className="text-xl font-bold">How to Play:</h2>
+            <ol className="list-decimal pl-5">
+              <li>Choose a bet type (e.g., 1 Number, High, Low, etc.).</li>
+              <li>
+                Select the numbers or zones associated with your bet type.
+              </li>
+              <li>Set your bet amount (minimum is 100).</li>
+              <li>
+                Click &apos;Spin&apos; and watch the roulette wheel determine
+                the result!
+              </li>
+            </ol>
+          </div>
         </h2>
 
         <div className="flex flex-col">

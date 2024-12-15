@@ -48,6 +48,7 @@ export default function SlotMachine({
   const [lastWin, setLastWin] = useState(0)
   const [errorMessage, setErrorMessage] = useState("")
   const [multiplier, setMultiplier] = useState(1)
+  const [showInstructions, setShowInstructions] = useState(false)
 
   const { execute: updateBet } = useServerAction(betTransaction)
 
@@ -138,8 +139,33 @@ export default function SlotMachine({
             <CardTitle className="font-alagard text-4xl font-normal">
               Slot Machine.
             </CardTitle>
+            <Button
+              onClick={() => setShowInstructions(!showInstructions)}
+              className="bg-gray-800 text-white py-2 px-4 rounded-lg hover:bg-gray-700 active:bg-gray-600"
+            >
+              {showInstructions ? "Hide Instructions" : "How to Play"}
+            </Button>
           </CardHeader>
           <CardContent>
+            {showInstructions && (
+              <div className="mb-8 p-4 bg-gray-800 text-white rounded-lg">
+                <h3 className="text-2xl font-bold mb-4">How to Play</h3>
+                <p>1. Choose your bet amount (minimum of 100 credits).</p>
+                <p>
+                  2. Click &quot;SPIN&quot; to start the game. The reels will
+                  spin and stop after a short duration.
+                </p>
+                <p>
+                  3. If all three reels match, you win based on the multiplier
+                  value for the matching symbol!
+                </p>
+                <p>
+                  4. The winning symbols and their multiplier values are shown
+                  below.
+                </p>
+              </div>
+            )}
+
             <div className="flex justify-between items-center mb-8">
               <div className="flex items-center gap-2">
                 <Coins className="w-6 h-6 text-yellow-500" />
@@ -212,6 +238,7 @@ export default function SlotMachine({
                 {errorMessage}
               </div>
             )}
+
             <div className="p-6 bg-gradient-to-br from-purple-800 via-gray-800 to-black text-white rounded-xl shadow-lg">
               <h2 className="text-2xl font-bold text-center mb-4">
                 Multiplier Values

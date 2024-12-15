@@ -18,7 +18,6 @@ import {
 } from "~/components/ui/select"
 import { betTransaction } from "~/hooks/bet/actions"
 
-// กำหนดประเภทสำหรับพร็อพที่คอมโพเนนต์นี้จะรับ
 interface HiloGameProps {
   balance: number
   minigameId: number
@@ -29,15 +28,16 @@ const HiloGame: React.FC<HiloGameProps> = ({ balance, minigameId }) => {
   const [guess, setGuess] = useState<string>("")
   const [diceResults, setDiceResults] = useState<number[]>([])
   const [gameMessage, setGameMessage] = useState<string>("")
-  const [playerBalance, setPlayerBalance] = useState<number>(balance) // ใช้ค่า balance ที่รับมาเป็นค่าเริ่มต้น
-  const [isRolling, setIsRolling] = useState<boolean>(false) // สถานะการหมุนลูกเต๋า
+  const [playerBalance, setPlayerBalance] = useState<number>(balance)
+  const [isRolling, setIsRolling] = useState<boolean>(false)
 
   const { execute: updateBet } = useServerAction(betTransaction)
 
-  // ปรับให้ฟังก์ชัน rollDice คืนค่าเป็น array ของตัวเลข
   const rollDice = (): number[] => {
-    setIsRolling(true) // ตั้งค่าให้การหมุนเริ่มต้น
-    return [1, 2, 3].map(() => Math.floor(Math.random() * 6) + 1)
+    setIsRolling(true)
+    const results = [1, 2, 3].map(() => Math.floor(Math.random() * 6) + 1)
+    new Audio("/sounds/dice-roll.mp3").play() // เล่นเสียงการทอยลูกเต๋า
+    return results
   }
 
   const handleBet = () => {
@@ -56,28 +56,30 @@ const HiloGame: React.FC<HiloGameProps> = ({ balance, minigameId }) => {
       return
     }
 
-    // เริ่มต้นการหมุนลูกเต๋า
+    if (!guess) {
+      setGameMessage("กรุณาเลือกประเภทการเดิมพันก่อน")
+      return
+    }
+
     const newDiceResults = rollDice()
-    setDiceResults(newDiceResults) // แสดงผลการทอยลูกเต๋าทันทีที่เริ่มหมุน
+    setDiceResults(newDiceResults)
 
     setIsRolling(true)
     setTimeout(() => {
       const sum = newDiceResults.reduce(
         (acc: number, value: number) => acc + value,
         0
-      ) // คำนวณผลรวมของลูกเต๋า
+      )
 
-      let multiplier = 0 // ตัวแปรเก็บผลตอบแทน
-
+      let multiplier = 0
       if (guess === "low" && sum >= 3 && sum <= 10) {
-        multiplier = 2 // ผลตอบแทน x2 ถ้าแทงต่ำ (3-10)
+        multiplier = 2
       } else if (guess === "high" && sum >= 12 && sum <= 18) {
-        multiplier = 2 // ผลตอบแทน x2 ถ้าแทงสูง (12-18)
+        multiplier = 2
       } else if (guess === "eleven" && sum === 11) {
-        multiplier = 7 // ผลตอบแทน x7 ถ้าแทงว่าออก 11
+        multiplier = 7
       }
 
-      // หลังจากการหมุนเสร็จสิ้นแล้ว
       setIsRolling(false)
 
       if (multiplier > 0) {
@@ -85,6 +87,7 @@ const HiloGame: React.FC<HiloGameProps> = ({ balance, minigameId }) => {
         setGameMessage(
           `คุณชนะ! ผลการทอยลูกเต๋าคือ ${sum} และคุณได้รับผลตอบแทน x${multiplier}`
         )
+        new Audio("/sounds/win.mp3").play() // เล่นเสียงการชนะ
         updateBet({
           betAmount: bet,
           betResult: "win",
@@ -94,6 +97,7 @@ const HiloGame: React.FC<HiloGameProps> = ({ balance, minigameId }) => {
       } else {
         setPlayerBalance(playerBalance - bet)
         setGameMessage(`คุณแพ้! ผลการทอยลูกเต๋าคือ ${sum}`)
+        new Audio("/sounds/lose.mp3").play() // เล่นเสียงการแพ้
         updateBet({
           betAmount: bet,
           betResult: "loss",
@@ -101,17 +105,45 @@ const HiloGame: React.FC<HiloGameProps> = ({ balance, minigameId }) => {
           multiplier: -1,
         })
       }
-    }, 1000) // ตั้งเวลา 1 วินาทีให้ลูกเต๋าหมุน
+    }, 1000)
   }
 
   return (
     <div className="flex flex-col items-center p-4 gap-4">
-      <h1 className="text-3xl font-bold font-alagard">Hilo (High-Low)</h1>
-      <div className="text-lg">
+      <h1 className="text-3xl font-bold font-alagard text-center">
+        Hilo (High-Low)
+      </h1>
+
+      <div className="text-lg mb-6 text-center max-w-xl mx-auto">
+        <h2 className="font-semibold text-xl mb-2">วิธีการเล่น:</h2>
+        <p>ทอยลูกเต๋า 3 ลูกและทำนายผลรวมของลูกเต๋า ตามประเภทที่คุณเลือก</p>
+        <ul className="list-disc pl-6 mt-2 mb-4">
+          <li>
+            <strong>Low:</strong> ทำนายว่าผลรวมจะอยู่ระหว่าง 3 ถึง 10
+          </li>
+          <li>
+            <strong>11:</strong> ทำนายว่าผลรวมจะเป็น 11
+          </li>
+          <li>
+            <strong>High:</strong> ทำนายว่าผลรวมจะอยู่ระหว่าง 12 ถึง 18
+          </li>
+        </ul>
+        <p>
+          เมื่อคุณตั้งเดิมพันและเลือกประเภทการเดิมพันแล้ว คลิก &quot;Cook the
+          dice!&quot; เพื่อทอยลูกเต๋า
+          ผลลัพธ์จะช่วยตัดสินว่าคุณชนะหรือแพ้ตามการทำนายของคุณ
+        </p>
+        <p className="mt-2">
+          หากคุณชนะ คุณจะได้รับผลตอบแทนตามตัวคูณ แต่ถ้าแพ้คุณจะเสียเงินเดิมพัน
+        </p>
+      </div>
+
+      <div className="text-lg mb-4 text-center">
         Balance: <NumberFlow value={playerBalance} /> บาท
       </div>
+
       <div className="flex gap-4 flex-row w-fit items-center justify-center">
-        <p className="w-full">Bet Amount : </p>
+        <p className="w-full">Bet Amount: </p>
         <Input
           type="number"
           value={bet}
@@ -123,7 +155,7 @@ const HiloGame: React.FC<HiloGameProps> = ({ balance, minigameId }) => {
         </Button>
       </div>
 
-      <div className="flex flex-row gap- items-center">
+      <div className="flex flex-row gap- items-center justify-center">
         <Select onValueChange={(value) => setGuess(value)}>
           <SelectTrigger>
             <SelectValue placeholder="Select bet types" />
@@ -131,29 +163,28 @@ const HiloGame: React.FC<HiloGameProps> = ({ balance, minigameId }) => {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Bet Types</SelectLabel>
-              <SelectItem value="low">Low (1-10)</SelectItem>
-              <SelectItem value="eleven">11</SelectItem>
-              <SelectItem value="high">High (12-18)</SelectItem>
+              <SelectItem value="low">Low (1-10) x2</SelectItem>
+              <SelectItem value="eleven">Number 11 x7</SelectItem>
+              <SelectItem value="high">High (12-18) x2</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
       </div>
 
-      <Button onClick={handleBet} variant="destructive">
+      <Button onClick={handleBet} variant="destructive" disabled={!guess}>
         Cook the dice!
       </Button>
 
       {diceResults.length > 0 && (
         <div className="mb-4">
-          <h2 className="text-xl">ผลการทอยลูกเต๋า:</h2>
-          <div className="flex space-x-2">
+          <h2 className="text-xl text-center">ผลการทอยลูกเต๋า:</h2>
+          <div className="flex space-x-2 justify-center">
             {diceResults.map((result, index) => (
               <div
                 key={index}
                 className={`text-xl ${isRolling ? "animate-spin" : ""}`}
                 style={{ transition: "transform 1s ease" }}
               >
-                {/* แสดงภาพลูกเต๋าจากพาธที่แก้ไข */}
                 <Image
                   src={`/static/image/minigames/dice-six-faces-${result.toString()}.svg`}
                   alt={`Dice ${result}`}
@@ -167,7 +198,9 @@ const HiloGame: React.FC<HiloGameProps> = ({ balance, minigameId }) => {
         </div>
       )}
 
-      <div className="text-xl font-semibold mb-4">{gameMessage}</div>
+      <div className="text-xl font-semibold mb-4 text-center">
+        {gameMessage}
+      </div>
     </div>
   )
 }
