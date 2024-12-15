@@ -1,6 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import NumberFlow from "@number-flow/react"
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 import { useForm } from "react-hook-form"
@@ -102,7 +103,7 @@ function Display({ displayName, role, userId, balance }: DisplayProps) {
         <div
           className={`${cn(balance < -1 ? "text-red-500" : "text-white")} font-normal`}
         >
-          {balance}
+          <NumberFlow value={balance} />
         </div>
       </CardTitle>
       <CardDescription className="font-alagard text-xl">{role}</CardDescription>
