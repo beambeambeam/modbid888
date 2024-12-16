@@ -50,6 +50,8 @@ const BlackjackGame: React.FC<MinigameProps> = ({ balance, minigameId }) => {
   const [bet, setBet] = useState<number>(100)
   const [playerMoney, setPlayerMoney] = useState<number>(balance)
   const [isGameRunning, setIsGameRunning] = useState<boolean>(false)
+  const [isInstructionsVisible, setIsInstructionsVisible] =
+    useState<boolean>(false) // State for instructions visibility
   const { toast } = useToast()
 
   const { execute: updateBet } = useServerAction(betTransaction)
@@ -187,6 +189,10 @@ const BlackjackGame: React.FC<MinigameProps> = ({ balance, minigameId }) => {
     return calculateScore(visibleHand)
   }
 
+  const handleToggleInstructions = () => {
+    setIsInstructionsVisible(!isInstructionsVisible)
+  }
+
   return (
     <div className="w-full flex flex-col">
       <h1 className="text-4xl font-alagard font-normal">Blackjack</h1>
@@ -217,10 +223,33 @@ const BlackjackGame: React.FC<MinigameProps> = ({ balance, minigameId }) => {
               >
                 All In
               </Button>
+              {/* How to Play Button */}
+              <Button onClick={handleToggleInstructions}>How to Play</Button>
             </div>
           </div>
         )}
       </div>
+
+      {/* Instructions Modal or Text */}
+      {isInstructionsVisible && (
+        <div className="my-4 p-4 border border-gray-300 rounded">
+          <h3 className="text-2xl font-bold">How to Play</h3>
+          <p className="text-lg">
+            1. Place a bet to start the game. <br />
+            2. You and the dealer will be dealt two cards each. <br />
+            3. Try to get as close to 21 points as possible without going over.
+            Aces can be worth 1 or 11 points. <br />
+            4. You can &quot;Hit&quot; to draw more cards or &quot;Stand&quot;
+            to stop drawing. <br />
+            5. If you go over 21 points, you lose. If the dealer goes over 21,
+            you win! <br />
+            6. The dealer will reveal their second card and keep drawing cards
+            until they reach at least 17 points. <br />
+            7. If your hand beats the dealer&apos;s hand, you win the bet.
+          </p>
+          <Button onClick={handleToggleInstructions}>Close</Button>
+        </div>
+      )}
 
       <div className="my-4">
         <h2 className="text-2xl font-alagard">Player&#39;s Hand</h2>
