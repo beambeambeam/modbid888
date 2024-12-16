@@ -23,7 +23,7 @@ async function Navbar() {
   const [balance] = await getBalanceAction()
 
   return (
-    <div className="h-fit sticky top-0 bg-background">
+    <div className="h-fit sticky top-0 bg-background z-[100]">
       <div className="h-16 flex items-center w-full justify-between px-14">
         <Link href="/minigames">
           <h1 className="font-alagard text-3xl">Modbid888</h1>
