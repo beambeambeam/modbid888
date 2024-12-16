@@ -7,15 +7,6 @@ import { useServerAction } from "zsa-react"
 
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select"
 import { betTransaction } from "~/hooks/bet/actions"
 
 interface HiloGameProps {
@@ -61,10 +52,12 @@ const HiloGame: React.FC<HiloGameProps> = ({ balance, minigameId }) => {
       return
     }
 
+    // หักเงินเดิมพันทันที
+    setPlayerBalance(playerBalance - bet)
+
     const newDiceResults = rollDice()
     setDiceResults(newDiceResults)
 
-    setIsRolling(true)
     setTimeout(() => {
       const sum = newDiceResults.reduce(
         (acc: number, value: number) => acc + value,
@@ -73,9 +66,9 @@ const HiloGame: React.FC<HiloGameProps> = ({ balance, minigameId }) => {
 
       let multiplier = 0
       if (guess === "low" && sum >= 3 && sum <= 10) {
-        multiplier = 2
+        multiplier = 1 //pay x2
       } else if (guess === "high" && sum >= 12 && sum <= 18) {
-        multiplier = 2
+        multiplier = 1 //pay x2
       } else if (guess === "eleven" && sum === 11) {
         multiplier = 7
       }
@@ -95,7 +88,6 @@ const HiloGame: React.FC<HiloGameProps> = ({ balance, minigameId }) => {
           multiplier: multiplier,
         })
       } else {
-        setPlayerBalance(playerBalance - bet)
         setGameMessage(`คุณแพ้! ผลการทอยลูกเต๋าคือ ${sum}`)
         new Audio("/sounds/lose.mp3").play() // เล่นเสียงการแพ้
         updateBet({
@@ -155,20 +147,25 @@ const HiloGame: React.FC<HiloGameProps> = ({ balance, minigameId }) => {
         </Button>
       </div>
 
-      <div className="flex flex-row gap- items-center justify-center">
-        <Select onValueChange={(value) => setGuess(value)}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select bet types" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Bet Types</SelectLabel>
-              <SelectItem value="low">Low (1-10) x2</SelectItem>
-              <SelectItem value="eleven">Number 11 x7</SelectItem>
-              <SelectItem value="high">High (12-18) x2</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+      <div className="flex flex-row gap-4 items-center justify-center">
+        <Button
+          onClick={() => setGuess("low")}
+          variant={guess === "low" ? "default" : "outline"}
+        >
+          Low (1-10) x2
+        </Button>
+        <Button
+          onClick={() => setGuess("eleven")}
+          variant={guess === "eleven" ? "default" : "outline"}
+        >
+          Number 11 x7
+        </Button>
+        <Button
+          onClick={() => setGuess("high")}
+          variant={guess === "high" ? "default" : "outline"}
+        >
+          High (12-18) x2
+        </Button>
       </div>
 
       <Button onClick={handleBet} variant="destructive" disabled={!guess}>
