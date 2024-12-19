@@ -49,8 +49,10 @@ const Wheel: React.FC<
   }
 
   const spinWheel = (): void => {
-    setMod((prev) => prev - 100)
-    setIsSpinning(true)
+    if (mod >= 100) {
+      setMod((prev) => prev - 100)
+      setIsSpinning(true)
+    }
     playSound("/sounds/SpinningWheel.mp3")
 
     const prizeIndex: number = getWeightedRandomIndex(
@@ -244,7 +246,7 @@ const Wheel: React.FC<
         <div className="text-lg font-bold">Result: {result}</div>
       )}
 
-      {/* เพิ่มคำอธิบาย rate การออก */}
+      {/* คำอธิบาย rate การออก */}
       <div className="mt-4 text-center">
         <h3 className="text-lg font-bold">Win Rates:</h3>
         <ul className="list-none">
