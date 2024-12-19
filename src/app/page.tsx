@@ -1,19 +1,18 @@
 import Link from "next/link"
 import posthog from "posthog-js"
 
-import Banner from "~/components/banner"
 import { Button } from "~/components/ui/button"
 import { RainbowButton } from "~/components/ui/rainbow-button"
+import { env } from "~/env"
 import { isAllowRole } from "~/lib/roles"
 
 export default async function Home() {
-  posthog.capture("my event", { property: "value" })
+  if (env.NODE_ENV === "developemnt") {
+    posthog.capture("my event", { property: "value" })
+  }
 
   return (
     <>
-      <div className="absolute z-50 w-full">
-        <Banner />
-      </div>
       <div className="text-foreground w-full flex items-center h-screen px-32">
         <div className="flex flex-col gap-6 items-center w-full">
           <h1 className="font-alagard text-[9rem] -rotate-2">Modbid888</h1>
