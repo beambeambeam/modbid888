@@ -7,7 +7,7 @@ import { env } from "~/env"
 import { isAllowRole } from "~/lib/roles"
 
 export default async function Home() {
-  if (env.NODE_ENV === "developemnt") {
+  if (env.NODE_ENV != "developemnt") {
     posthog.capture("my event", { property: "value" })
   }
 
